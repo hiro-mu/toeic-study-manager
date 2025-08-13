@@ -33,13 +33,13 @@ export default function Header({ goals, onUpdateGoals }: HeaderProps) {
           value={targetScore}
           onChange={(e) => setTargetScore(Number(e.target.value))}
           placeholder="目標スコア"
-          className="p-3 border-2 border-gray-200 rounded-lg text-base text-black"
+          className="p-3 border-2 border-black-200 rounded-lg text-base text-black"
         />
         <input
           type="date"
           value={examDate || ''}
           onChange={(e) => setExamDate(e.target.value)}
-          className="p-3 border-2 border-gray-200 rounded-lg text-base text-black"
+          className="p-3 border-2 border-black-200 rounded-lg text-base text-black"
         />
         <button
           onClick={handleUpdateGoals}

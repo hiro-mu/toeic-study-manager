@@ -46,7 +46,7 @@ export default function TaskForm({ onAddTask }: TaskFormProps) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="タスク名"
-          className="w-full p-3 border-2 border-gray-200 rounded-lg text-base text-black"
+          className="w-full p-3 border-2 border-black-200 rounded-lg text-base text-black"
         />
       </div>
 
@@ -54,7 +54,7 @@ export default function TaskForm({ onAddTask }: TaskFormProps) {
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="p-3 border-2 border-gray-200 rounded-lg text-base text-black"
+          className="p-3 border-2 border-black-200 rounded-lg text-base text-black"
         >
           <option value="other">カテゴリーを選択</option>
           <option value="listening">リスニング</option>
@@ -67,7 +67,7 @@ export default function TaskForm({ onAddTask }: TaskFormProps) {
           type="date"
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
-          className="p-3 border-2 border-gray-200 rounded-lg text-base text-black"
+          className="p-3 border-2 border-black-200 rounded-lg text-base text-black"
         />
       </div>
 
@@ -76,7 +76,7 @@ export default function TaskForm({ onAddTask }: TaskFormProps) {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="説明（任意）"
-          className="w-full p-3 border-2 border-gray-200 rounded-lg text-base h-24 resize-none text-black"
+          className="w-full p-3 border-2 border-black-200 rounded-lg text-base h-24 resize-none text-black"
         />
       </div>
 

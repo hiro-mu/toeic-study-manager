@@ -56,7 +56,7 @@ function CompletionModal({ isOpen, onClose, onComplete }: CompletionModalProps) 
         <h3 className="text-xl font-bold mb-4">タスク完了記録</h3>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-black-700 mb-1">
             所要時間（分）:
           </label>
           <input
@@ -70,7 +70,7 @@ function CompletionModal({ isOpen, onClose, onComplete }: CompletionModalProps) 
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-black-700 mb-1">
             難易度:
           </label>
           <select
@@ -85,7 +85,7 @@ function CompletionModal({ isOpen, onClose, onComplete }: CompletionModalProps) 
         </div>
 
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-black-700 mb-1">
             集中度:
           </label>
           <select
@@ -102,7 +102,7 @@ function CompletionModal({ isOpen, onClose, onComplete }: CompletionModalProps) 
         <div className="flex justify-end space-x-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+            className="px-4 py-2 text-black-600 hover:bg-black-100 rounded-lg"
           >
             キャンセル
           </button>
