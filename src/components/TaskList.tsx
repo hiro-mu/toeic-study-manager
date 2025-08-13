@@ -38,7 +38,7 @@ export default function TaskList({ tasks, onCompleteTask, onDeleteTask }: TaskLi
       reading: 'bg-purple-100 text-purple-700',
       vocabulary: 'bg-green-100 text-green-700',
       grammar: 'bg-orange-100 text-orange-700',
-      other: 'bg-gray-100 text-gray-700',
+      other: 'bg-black-100 text-black-700',
     };
     return colors[category] || colors.other;
   };

@@ -5,9 +5,10 @@ import Header from '@/components/Header';
 import TaskList from '@/components/TaskList';
 import TaskForm from '@/components/TaskForm';
 import type { Task } from '@/components/CompletionModal';
+import Calendar from '@/components/Calendar';
 
 export default function Home() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [uncompletedTasks, setUncompletedTasks] = useState<Task[]>([]);
   const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
   const [goals, setGoals] = useState({
     targetScore: 750,
@@ -21,7 +22,7 @@ export default function Home() {
       const savedCompletedTasks = localStorage.getItem('toeicCompletedTasks');
       const savedGoals = localStorage.getItem('toeicGoals');
 
-      if (savedTasks) setTasks(JSON.parse(savedTasks));
+      if (savedTasks) setUncompletedTasks(JSON.parse(savedTasks));
       if (savedCompletedTasks) setCompletedTasks(JSON.parse(savedCompletedTasks));
       if (savedGoals) setGoals(JSON.parse(savedGoals));
     }
@@ -33,10 +34,10 @@ export default function Home() {
   };
 
   const handleCompleteTask = (taskId: number, completionData: { time: number; difficulty: string; focus: string }) => {
-    const taskIndex = tasks.findIndex((t) => t.id === taskId);
+    const taskIndex = uncompletedTasks.findIndex((t: Task) => t.id === taskId);
     if (taskIndex === -1) return;
 
-    const task = tasks[taskIndex];
+    const task = uncompletedTasks[taskIndex];
     const completedTask: Task = {
       ...task,
       completed: true,
@@ -44,13 +45,13 @@ export default function Home() {
       completionData,
     };
 
-    const newTasks = [...tasks];
-    newTasks.splice(taskIndex, 1);
-    setTasks(newTasks);
+    const newUncompletedTasks = [...uncompletedTasks];
+    newUncompletedTasks.splice(taskIndex, 1);
+    setUncompletedTasks(newUncompletedTasks);
 
     setCompletedTasks([...completedTasks, completedTask]);
 
-    localStorage.setItem('toeicTasks', JSON.stringify(newTasks));
+    localStorage.setItem('toeicTasks', JSON.stringify(newUncompletedTasks));
     localStorage.setItem('toeicCompletedTasks', JSON.stringify([...completedTasks, completedTask]));
   };
 
@@ -58,13 +59,13 @@ export default function Home() {
     const confirmed = window.confirm('このタスクを削除しますか？この操作は取り消せません。');
     if (!confirmed) return;
 
-    const newTasks = tasks.filter((task) => task.id !== taskId);
-    setTasks(newTasks);
-    localStorage.setItem('toeicTasks', JSON.stringify(newTasks));
+    const newUncompletedTasks = uncompletedTasks.filter((task: Task) => task.id !== taskId);
+    setUncompletedTasks(newUncompletedTasks);
+    localStorage.setItem('toeicTasks', JSON.stringify(newUncompletedTasks));
   };
 
   const calculateStats = () => {
-    const totalTasks = tasks.length + completedTasks.length;
+    const totalTasks = uncompletedTasks.length + completedTasks.length;
     const completionRate = totalTasks > 0
       ? Math.round((completedTasks.length / totalTasks) * 100)
       : 0;
@@ -85,8 +86,8 @@ export default function Home() {
 
       remainingDays = daysLeft > 0 ? String(daysLeft) : '終了';
       dailyTasksNeeded = daysLeft > 0
-        ? String(Math.ceil(tasks.length / daysLeft))
-        : String(tasks.length);
+        ? String(Math.ceil(uncompletedTasks.length / daysLeft))
+        : String(uncompletedTasks.length);
     }
 
     return {
@@ -105,26 +106,26 @@ export default function Home() {
 
       <div className="bg-white p-5 rounded-2xl shadow-lg mb-5">
         <h3 className="text-xl font-bold mb-3 text-black">学習進捗</h3>
-        <div className="h-5 bg-gray-200 rounded-full overflow-hidden">
+        <div className="h-5 bg-black-200 rounded-full overflow-hidden">
           <div
             className="h-full bg-gradient-to-r from-blue-400 to-purple-600 transition-all"
             style={{ width: `${stats.completionRate}%` }}
           />
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-5">
-          <div className="bg-gray-50 p-4 rounded-xl text-center">
+          <div className="bg-black-50 p-4 rounded-xl text-center">
             <div className="text-2xl font-bold text-blue-600">{stats.completionRate}%</div>
             <div className="text-sm text-black">完了率</div>
           </div>
-          <div className="bg-gray-50 p-4 rounded-xl text-center">
+          <div className="bg-black-50 p-4 rounded-xl text-center">
             <div className="text-2xl font-bold text-blue-600">{stats.totalHours}h</div>
             <div className="text-sm text-black">総学習時間</div>
           </div>
-          <div className="bg-gray-50 p-4 rounded-xl text-center">
+          <div className="bg-black-50 p-4 rounded-xl text-center">
             <div className="text-2xl font-bold text-blue-600">{stats.remainingDays}</div>
             <div className="text-sm text-black">残り日数</div>
           </div>
-          <div className="bg-gray-50 p-4 rounded-xl text-center">
+          <div className="bg-black-50 p-4 rounded-xl text-center">
             <div className="text-2xl font-bold text-blue-600">{stats.dailyTasksNeeded}</div>
             <div className="text-sm text-black">1日必要タスク</div>
           </div>
@@ -141,18 +142,18 @@ export default function Home() {
               completed: false,
               createdAt: new Date().toISOString(),
             };
-            setTasks([...tasks, newTask]);
-            localStorage.setItem('toeicTasks', JSON.stringify([...tasks, newTask]));
+            setUncompletedTasks([...uncompletedTasks, newTask]);
+            localStorage.setItem('toeicTasks', JSON.stringify([...uncompletedTasks, newTask]));
           }} />
           <TaskList
-            tasks={tasks}
+            tasks={uncompletedTasks}
             onCompleteTask={handleCompleteTask}
             onDeleteTask={handleDeleteTask}
           />
         </div>
         <div className="bg-white p-5 rounded-2xl shadow-lg">
           <h2 className="text-xl font-bold mb-4 text-black">📊 進捗可視化</h2>
-          {/* カレンダービューは後で実装 */}
+          <Calendar tasks={[...uncompletedTasks, ...completedTasks]} currentDate={new Date()} />
         </div>
       </div>
     </main>
