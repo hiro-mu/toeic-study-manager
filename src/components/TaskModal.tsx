@@ -44,7 +44,7 @@ export default function TaskModal({ tasks, date, onClose }: TaskModalProps) {
                   {task.completed ? '完了' : '未完了'}
                 </span>
                 {task.completionData && (
-                  <span className="ml-4">
+                  <span className="ml-4 text-gray-900">
                     学習時間: {task.completionData.time}分
                   </span>
                 )}

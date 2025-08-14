@@ -38,7 +38,7 @@ export default function TaskList({ tasks, onCompleteTask, onDeleteTask }: TaskLi
       reading: 'bg-purple-100 text-purple-700',
       vocabulary: 'bg-green-100 text-green-700',
       grammar: 'bg-orange-100 text-orange-700',
-      other: 'bg-black-100 text-black-700',
+      other: 'bg-black-100 text-gray-900',
     };
     return colors[category] || colors.other;
   };
@@ -69,12 +69,14 @@ export default function TaskList({ tasks, onCompleteTask, onDeleteTask }: TaskLi
             <div className="flex justify-between items-center mb-2">
               <h3 className="font-bold text-black">{task.title}</h3>
               <div className="space-x-2">
-                <button
-                  onClick={() => handleCompleteTask(task.id)}
-                  className="px-3 py-1 text-sm bg-gradient-to-r from-blue-400 to-purple-600 text-white rounded-lg hover:opacity-90"
-                >
-                  完了
-                </button>
+                {!task.completed && (
+                  <button
+                    onClick={() => handleCompleteTask(task.id)}
+                    className="px-3 py-1 text-sm bg-gradient-to-r from-blue-400 to-purple-600 text-white rounded-lg hover:opacity-90"
+                  >
+                    完了
+                  </button>
+                )}
                 <button
                   onClick={() => onDeleteTask(task.id)}
                   className="px-3 py-1 text-sm bg-red-500 text-white rounded-lg hover:opacity-90"

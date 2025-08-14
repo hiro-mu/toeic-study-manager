@@ -15,9 +15,13 @@ describe('タスク完了機能', () => {
   });
 
   test('タスク完了時に完了状態が正しく更新されること', () => {
-    render(
+    const initialTask = { ...mockTask, completed: false };
+    const completedTask = { ...mockTask, completed: true };
+    const tasks = [initialTask];
+
+    const { rerender } = render(
       <TaskList
-        tasks={mockTasks}
+        tasks={tasks}
         onCompleteTask={mockOnComplete}
         onDeleteTask={mockOnDelete}
       />
@@ -26,7 +30,33 @@ describe('タスク完了機能', () => {
     const completeButton = screen.getByText('完了');
     fireEvent.click(completeButton);
 
-    expect(mockOnComplete).toHaveBeenCalledWith(mockTask.id);
+    // モーダルで学習時間を入力
+    const timeInput = screen.getByLabelText('所要時間（分）:');
+    fireEvent.change(timeInput, { target: { value: '30' } });
+
+    // 完了ボタンをクリック
+    const modalCompleteButton = screen.getByText('完了記録');
+    fireEvent.click(modalCompleteButton);
+
+    // タスクの完了処理が正しい引数で呼ばれることを確認
+    expect(mockOnComplete).toHaveBeenCalledWith(initialTask.id, { "difficulty": "normal", "focus": "normal", "time": 30 });
+
+    // モーダルが閉じられることを確認
+    expect(screen.queryByText('タスク完了')).not.toBeInTheDocument();
+
+    // タスクが完了状態に更新されたことを確認
+    rerender(
+      <TaskList
+        tasks={[completedTask]}
+        onCompleteTask={mockOnComplete}
+        onDeleteTask={mockOnDelete}
+      />
+    );
+
+    // 完了状態のタスクが正しく表示されることを確認
+    expect(screen.queryByRole('button', { name: '完了' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '完了記録' })).not.toBeInTheDocument();
+    expect(screen.getByText(completedTask.title)).toBeInTheDocument();
   });
 
   test('完了したタスクが未完了リストから削除されること', () => {
@@ -53,22 +83,6 @@ describe('タスク完了機能', () => {
     expect(screen.queryByText(mockTask.title)).not.toBeInTheDocument();
   });
 
-  test('タスク完了時に完了モーダルが表示されること', () => {
-    render(
-      <TaskList
-        tasks={mockTasks}
-        onCompleteTask={mockOnComplete}
-        onDeleteTask={mockOnDelete}
-      />
-    );
-
-    const completeButton = screen.getByText('完了');
-    fireEvent.click(completeButton);
-
-    expect(screen.getByText('タスク完了')).toBeInTheDocument();
-    expect(screen.getByText('学習時間を入力してください')).toBeInTheDocument();
-  });
-
   test('完了モーダルで学習時間が入力できること', () => {
     render(
       <TaskList
@@ -81,10 +95,10 @@ describe('タスク完了機能', () => {
     const completeButton = screen.getByText('完了');
     fireEvent.click(completeButton);
 
-    const timeInput = screen.getByLabelText('学習時間（分）');
+    const timeInput = screen.getByLabelText('所要時間（分）:');
     fireEvent.change(timeInput, { target: { value: '30' } });
 
-    expect(timeInput).toHaveValue('30');
+    expect(timeInput).toHaveValue(30);
   });
 
   test('学習時間に数値以外を入力した場合のバリデーション', () => {
@@ -99,9 +113,12 @@ describe('タスク完了機能', () => {
     const completeButton = screen.getByText('完了');
     fireEvent.click(completeButton);
 
-    const timeInput = screen.getByLabelText('学習時間（分）');
+    const timeInput = screen.getByLabelText('所要時間（分）:');
     fireEvent.change(timeInput, { target: { value: 'abc' } });
 
-    expect(screen.getByText('数値を入力してください')).toBeInTheDocument();
+    const modalCompleteButton = screen.getByText('完了記録');
+    fireEvent.click(modalCompleteButton);
+
+    expect(screen.getByRole('alert')).toHaveTextContent('所要時間を正しく入力してください');
   });
 });
