@@ -17,7 +17,7 @@ describe('タスク作成機能', () => {
 
     fireEvent.click(submitButton);
 
-    expect(screen.getByText('タスク名は必須です')).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('タイトルと期限は必須です');
     expect(mockOnAddTask).not.toHaveBeenCalled();
   });
 
@@ -65,6 +65,16 @@ describe('タスク作成機能', () => {
     });
     fireEvent.click(screen.getByText('タスクを追加'));
 
+    fireEvent.change(screen.getByLabelText('カテゴリー'), {
+      target: { value: 'reading' }
+    });
+
+    fireEvent.change(screen.getByLabelText('期限'), {
+      target: { value: '2025-12-31' }
+    });
+
+    fireEvent.click(screen.getByText('タスクを追加'));
+
     // フォームがクリアされていることを確認
     expect(screen.getByLabelText('タスク名')).toHaveValue('');
 
@@ -72,6 +82,15 @@ describe('タスク作成機能', () => {
     fireEvent.change(screen.getByLabelText('タスク名'), {
       target: { value: 'タスク2' }
     });
+
+    fireEvent.change(screen.getByLabelText('カテゴリー'), {
+      target: { value: 'reading' }
+    });
+
+    fireEvent.change(screen.getByLabelText('期限'), {
+      target: { value: '2025-12-31' }
+    });
+
     fireEvent.click(screen.getByText('タスクを追加'));
 
     expect(mockOnAddTask).toHaveBeenCalledTimes(2);
