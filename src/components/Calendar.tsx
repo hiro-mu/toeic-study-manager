@@ -1,15 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Task } from '@/types';
+import { Task, Goal } from '@/types';
 import TaskModal from './TaskModal';
 
 interface CalendarProps {
   tasks: Task[];
   currentDate: Date;
+  goals?: Goal;
 }
 
-export default function Calendar({ tasks, currentDate }: CalendarProps) {
+export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
   const [displayDate, setDisplayDate] = useState(currentDate);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
@@ -42,7 +43,13 @@ export default function Calendar({ tasks, currentDate }: CalendarProps) {
     const formattedDate = `${year}-${month}-${day}`;
 
     return tasks.filter(task => task.dueDate === formattedDate);
-  }; const renderCalendar = () => {
+  };
+
+  const isExamDate = (dateString: string) => {
+    return goals?.examDate === dateString;
+  };
+
+  const renderCalendar = () => {
     const days = getDaysInMonth(displayDate);
     const firstDay = getFirstDayOfMonth(displayDate);
     const calendar = [];
@@ -74,11 +81,14 @@ export default function Calendar({ tasks, currentDate }: CalendarProps) {
       const tasksForDate = getTasksForDate(dateString);
       const hasTasks = tasksForDate.length > 0;
       const hasCompletedTasks = tasksForDate.some(task => task.completed);
+      const isExam = isExamDate(dateString);
 
       const hasUncompletedTasks = tasksForDate.some(task => !task.completed);
 
       let bgClass = '';
-      if (hasUncompletedTasks && hasCompletedTasks) {
+      if (isExam) {
+        bgClass = 'bg-red-500 text-white font-bold border-red-600 exam-date';
+      } else if (hasUncompletedTasks && hasCompletedTasks) {
         bgClass = 'has-task has-completed-task relative overflow-hidden';
       } else if (hasUncompletedTasks) {
         bgClass = 'has-task bg-blue-200 hover:bg-blue-300';
@@ -89,18 +99,23 @@ export default function Calendar({ tasks, currentDate }: CalendarProps) {
       week.push(
         <div
           key={dateString}
-          className={`p-2 text-center border border-black rounded-md text-black ${bgClass} ${(hasUncompletedTasks || hasCompletedTasks) ? 'cursor-pointer hover:opacity-80' : ''
+          className={`p-2 text-center border border-black rounded-md ${isExam ? 'text-white' : 'text-black'} ${bgClass} ${(hasUncompletedTasks || hasCompletedTasks || isExam) ? 'cursor-pointer hover:opacity-80' : ''
             }`}
-          style={hasUncompletedTasks && hasCompletedTasks ? {
+          style={!isExam && hasUncompletedTasks && hasCompletedTasks ? {
             background: 'linear-gradient(to right, rgb(191 219 254) 50%, rgb(187 247 208) 50%)'
           } : undefined}
           onClick={() => {
-            if (hasUncompletedTasks || hasCompletedTasks) {
+            if (hasUncompletedTasks || hasCompletedTasks || isExam) {
               setSelectedDate(dateString);
             }
           }}
         >
-          {day}
+          <div className="relative">
+            {day}
+            {isExam && (
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full border border-white"></div>
+            )}
+          </div>
         </div>
       );
 
@@ -136,12 +151,60 @@ export default function Calendar({ tasks, currentDate }: CalendarProps) {
       <div className="space-y-2">
         {renderCalendar()}
       </div>
+      
+      {/* カレンダーの凡例 */}
+      <div className="mt-4 flex flex-wrap gap-4 text-sm">
+        <div className="flex items-center">
+          <div className="w-4 h-4 bg-blue-200 rounded mr-2"></div>
+          <span className="text-black">未完了タスク</span>
+        </div>
+        <div className="flex items-center">
+          <div className="w-4 h-4 bg-green-200 rounded mr-2"></div>
+          <span className="text-black">完了済みタスク</span>
+        </div>
+        <div className="flex items-center">
+          <div className="w-4 h-4 bg-red-500 rounded mr-2"></div>
+          <span className="text-black">試験日</span>
+        </div>
+      </div>
+      
       {selectedDate && (
-        <TaskModal
-          tasks={getTasksForDate(selectedDate)}
-          date={selectedDate}
-          onClose={() => setSelectedDate(null)}
-        />
+        <>
+          {isExamDate(selectedDate) ? (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold text-gray-900">
+                    🎯 試験日: {new Date(selectedDate).toLocaleDateString('ja-JP', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </h2>
+                  <button
+                    onClick={() => setSelectedDate(null)}
+                    className="text-gray-600 hover:text-gray-900"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="text-center">
+                  <div className="text-6xl mb-4">🎯</div>
+                  <p className="text-gray-700 mb-4">TOEIC試験日です！</p>
+                  <p className="text-sm text-gray-600">
+                    目標スコア: {goals?.targetScore || '未設定'}点
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <TaskModal
+              tasks={getTasksForDate(selectedDate)}
+              date={selectedDate}
+              onClose={() => setSelectedDate(null)}
+            />
+          )}
+        </>
       )}
     </div>
   );

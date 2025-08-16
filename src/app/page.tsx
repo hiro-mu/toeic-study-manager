@@ -169,7 +169,11 @@ export default function Home() {
         </div>
         <div className="bg-white p-5 rounded-2xl shadow-lg">
           <h2 className="text-xl font-bold mb-4 text-black">📊 進捗可視化</h2>
-          <Calendar tasks={[...uncompletedTasks, ...completedTasks]} currentDate={new Date()} />
+          <Calendar 
+            tasks={[...uncompletedTasks, ...completedTasks]} 
+            currentDate={new Date()} 
+            goals={goals}
+          />
         </div>
       </div>
     </main>
