@@ -12,9 +12,6 @@ const customJestConfig: Config = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   testPathIgnorePatterns: ['/node_modules/', '/.next/'],
-  transform: {
-    '^.+\\.(ts|tsx)$': '@swc/jest',
-  },
 };
 
 export default createJestConfig(customJestConfig);
