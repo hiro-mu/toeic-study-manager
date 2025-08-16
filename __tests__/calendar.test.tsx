@@ -83,4 +83,73 @@ describe('カレンダー表示機能', () => {
 
     expect(screen.queryByText('2025年8月13日のタスク')).not.toBeInTheDocument();
   });
+
+  test('試験日が設定されている場合、カレンダー上で正しく表示されることを確認', () => {
+    const goals = {
+      targetScore: 800,
+      examDate: '2025-08-15'
+    };
+
+    render(<Calendar tasks={tasks} currentDate={today} goals={goals} />);
+
+    const day15Cell = screen.getByText('15').closest('div[class*="p-2"]');
+    expect(day15Cell).toHaveClass('exam-date');
+    expect(day15Cell).toHaveClass('bg-red-500');
+  });
+
+  test('試験日をクリックすると専用モーダルが表示されることを確認', () => {
+    const goals = {
+      targetScore: 800,
+      examDate: '2025-08-15'
+    };
+
+    render(<Calendar tasks={tasks} currentDate={today} goals={goals} />);
+
+    const day15Cell = screen.getByText('15').closest('div[class*="p-2"]');
+    fireEvent.click(day15Cell!);
+
+    expect(screen.getByText(/🎯 試験日: 2025年8月15日/)).toBeInTheDocument();
+    expect(screen.getByText('TOEIC試験日です！')).toBeInTheDocument();
+    expect(screen.getByText('目標スコア: 800点')).toBeInTheDocument();
+  });
+
+  test('試験日が設定されていない場合、特別な表示がされないことを確認', () => {
+    const goals = {
+      targetScore: 800,
+      examDate: null
+    };
+
+    render(<Calendar tasks={tasks} currentDate={today} goals={goals} />);
+
+    const day15Cell = screen.getByText('15').closest('div[class*="p-2"]');
+    expect(day15Cell).not.toHaveClass('exam-date');
+    expect(day15Cell).not.toHaveClass('bg-red-500');
+  });
+
+  test('カレンダーの凡例が正しく表示されることを確認', () => {
+    render(<Calendar tasks={tasks} currentDate={today} />);
+
+    expect(screen.getByText('未完了タスク')).toBeInTheDocument();
+    expect(screen.getByText('完了済みタスク')).toBeInTheDocument();
+    expect(screen.getByText('試験日')).toBeInTheDocument();
+  });
+
+  test('試験日モーダルを閉じることができることを確認', () => {
+    const goals = {
+      targetScore: 800,
+      examDate: '2025-08-15'
+    };
+
+    render(<Calendar tasks={tasks} currentDate={today} goals={goals} />);
+
+    const day15Cell = screen.getByText('15').closest('div[class*="p-2"]');
+    fireEvent.click(day15Cell!);
+
+    expect(screen.getByText(/🎯 試験日/)).toBeInTheDocument();
+
+    const closeButton = screen.getByText('✕');
+    fireEvent.click(closeButton);
+
+    expect(screen.queryByText(/🎯 試験日/)).not.toBeInTheDocument();
+  });
 });
