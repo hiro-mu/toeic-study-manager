@@ -10,9 +10,14 @@ import Calendar from '@/components/Calendar';
 export default function Home() {
   const [uncompletedTasks, setUncompletedTasks] = useState<Task[]>([]);
   const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
-  const [goals, setGoals] = useState({
-    targetScore: 750,
-    examDate: null as string | null,
+  interface GoalsState {
+    targetScore: number;
+    examDate: string | null;
+  }
+
+  const [goals, setGoals] = useState<GoalsState>({
+    targetScore: 0,
+    examDate: null,
   });
 
   useEffect(() => {
@@ -21,14 +26,25 @@ export default function Home() {
       const savedTasks = localStorage.getItem('toeicTasks');
       const savedCompletedTasks = localStorage.getItem('toeicCompletedTasks');
       const savedGoals = localStorage.getItem('toeicGoals');
-
       if (savedTasks) setUncompletedTasks(JSON.parse(savedTasks));
       if (savedCompletedTasks) setCompletedTasks(JSON.parse(savedCompletedTasks));
-      if (savedGoals) setGoals(JSON.parse(savedGoals));
+      if (savedGoals) {
+        const parsedGoals = JSON.parse(savedGoals);
+        // examDateがnullでない場合、ISO形式の日付文字列（YYYY-MM-DD）に変換
+        let formattedExamDate = null;
+        if (parsedGoals.examDate) {
+          const date = new Date(parsedGoals.examDate);
+          formattedExamDate = date.toISOString().split('T')[0];
+        }
+        setGoals({
+          ...parsedGoals,
+          examDate: formattedExamDate
+        });
+      }
     }
   }, []);
 
-  const handleUpdateGoals = (newGoals: { targetScore: number; examDate: string | null }) => {
+  const handleUpdateGoals = (newGoals: GoalsState) => {
     setGoals(newGoals);
     localStorage.setItem('toeicGoals', JSON.stringify(newGoals));
   };

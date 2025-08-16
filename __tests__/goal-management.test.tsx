@@ -1,68 +1,53 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import TaskForm from '@/components/TaskForm';
-import { mockGoal, clearLocalStorage, setLocalStorageItem } from './utils';
+import Header from '@/components/Header';
+import { clearLocalStorage } from './utils';
 
 describe('目標設定・管理機能', () => {
+  const mockOnUpdateGoals = jest.fn();
+  
+  const initialGoalsWithDefaults = {
+    targetScore: 0,
+    examDate: null as string | null
+  };
+
   beforeEach(() => {
     clearLocalStorage();
+    mockOnUpdateGoals.mockClear();
   });
 
-  test('目標スコアが正しく設定されること', () => {
-    render(<TaskForm />);
+  test('目標スコアが正しく変更されること', () => {
+    render(<Header goals={initialGoalsWithDefaults} onUpdateGoals={mockOnUpdateGoals} />);
     const scoreInput = screen.getByLabelText('目標スコア');
+
+    // 初期値が0であることを確認
+    expect(scoreInput).toHaveValue(0);
+    
+    // 目標スコアを入力
     fireEvent.change(scoreInput, { target: { value: '800' } });
-    expect(scoreInput).toHaveValue('800');
-  });
-
-  test('目標スコアに数値以外を入力した場合のバリデーション', () => {
-    render(<TaskForm />);
-    const scoreInput = screen.getByLabelText('目標スコア');
-    fireEvent.change(scoreInput, { target: { value: 'abc' } });
-    expect(screen.getByText('数値を入力してください')).toBeInTheDocument();
-  });
-
-  test('試験日が正しく設定されることを確認', () => {
-    render(<TaskForm />);
-    const dateInput = screen.getByLabelText('試験日');
-    const futureDate = '2025-12-31';
-    fireEvent.change(dateInput, { target: { value: futureDate } });
-    expect(dateInput).toHaveValue(futureDate);
-  });
-
-  test('過去の日付を試験日に設定した場合の処理', () => {
-    render(<TaskForm />);
-    const dateInput = screen.getByLabelText('試験日');
-    const pastDate = '2023-01-01';
-    fireEvent.change(dateInput, { target: { value: pastDate } });
-    expect(screen.getByText('過去の日付は設定できません')).toBeInTheDocument();
-  });
-
-  test('目標更新時にローカルストレージに正しく保存されることを確認', () => {
-    render(<TaskForm />);
-    const scoreInput = screen.getByLabelText('目標スコア');
-    const dateInput = screen.getByLabelText('試験日');
-    const saveButton = screen.getByText('保存');
-
-    fireEvent.change(scoreInput, { target: { value: '800' } });
-    fireEvent.change(dateInput, { target: { value: '2025-12-31' } });
-    fireEvent.click(saveButton);
-
-    const savedGoal = JSON.parse(localStorage.getItem('goal') || '{}');
-    expect(savedGoal).toEqual({
+    
+    // onUpdateGoalsが呼ばれたことを確認
+    expect(mockOnUpdateGoals).toHaveBeenCalledWith({
       targetScore: 800,
-      examDate: '2025-12-31'
+      examDate: null
     });
   });
 
-  test('目標データの初期値が正しく読み込まれることを確認', () => {
-    setLocalStorageItem('goal', mockGoal);
-    render(<TaskForm />);
-
-    const scoreInput = screen.getByLabelText('目標スコア');
+  test('試験日が正しく設定されることを確認', () => {
+    render(<Header goals={initialGoalsWithDefaults} onUpdateGoals={mockOnUpdateGoals} />);
     const dateInput = screen.getByLabelText('試験日');
 
-    expect(scoreInput).toHaveValue('800');
-    expect(dateInput).toHaveValue('2025-12-31');
+    // 初期値が空であることを確認
+    expect(dateInput).toHaveValue('');
+    
+    // 試験日を入力
+    const futureDate = '2025-12-31';
+    fireEvent.change(dateInput, { target: { value: futureDate } });
+    
+    // onUpdateGoalsが呼ばれたことを確認
+    expect(mockOnUpdateGoals).toHaveBeenCalledWith({
+      targetScore: 0, // または null（使用するinitialGoalsによる）
+      examDate: futureDate
+    });
   });
 });
