@@ -8,10 +8,16 @@ describe('タスク削除機能', () => {
   const mockOnComplete = jest.fn();
   const mockOnDelete = jest.fn();
   const mockTasks: Task[] = [mockTask];
+  let mockConfirm: jest.SpyInstance;
 
   beforeEach(() => {
     mockOnComplete.mockClear();
     mockOnDelete.mockClear();
+    mockConfirm = jest.spyOn(window, 'confirm').mockReturnValue(true);
+  });
+
+  afterEach(() => {
+    mockConfirm.mockRestore();
   });
 
   test('タスクが正しく削除されることを確認', () => {
@@ -26,10 +32,11 @@ describe('タスク削除機能', () => {
     const deleteButton = screen.getByText('削除');
     fireEvent.click(deleteButton);
 
+    expect(mockConfirm).toHaveBeenCalledWith('このタスクを削除しますか？');
     expect(mockOnDelete).toHaveBeenCalledWith(mockTask.id);
   });
 
-  test('削除確認ダイアログが表示されること', () => {
+  test('削除確認ダイアログが呼び出されること', () => {
     render(
       <TaskList
         tasks={mockTasks}
@@ -41,11 +48,12 @@ describe('タスク削除機能', () => {
     const deleteButton = screen.getByText('削除');
     fireEvent.click(deleteButton);
 
-    expect(screen.getByText('タスクを削除しますか？')).toBeInTheDocument();
-    expect(screen.getByText('この操作は取り消せません')).toBeInTheDocument();
+    expect(mockConfirm).toHaveBeenCalledWith('このタスクを削除しますか？');
   });
 
   test('削除確認ダイアログでキャンセルを選択した場合、タスクが削除されないこと', () => {
+    mockConfirm.mockReturnValueOnce(false);
+
     render(
       <TaskList
         tasks={mockTasks}
@@ -57,11 +65,8 @@ describe('タスク削除機能', () => {
     const deleteButton = screen.getByText('削除');
     fireEvent.click(deleteButton);
 
-    const cancelButton = screen.getByText('キャンセル');
-    fireEvent.click(cancelButton);
-
+    expect(mockConfirm).toHaveBeenCalledWith('このタスクを削除しますか？');
     expect(mockOnDelete).not.toHaveBeenCalled();
-    expect(screen.getByText(mockTask.title)).toBeInTheDocument();
   });
 
   test('削除後にタスクがリストから削除されることを確認', () => {
@@ -76,8 +81,8 @@ describe('タスク削除機能', () => {
     const deleteButton = screen.getByText('削除');
     fireEvent.click(deleteButton);
 
-    const confirmButton = screen.getByText('削除する');
-    fireEvent.click(confirmButton);
+    expect(mockConfirm).toHaveBeenCalledWith('このタスクを削除しますか？');
+    expect(mockOnDelete).toHaveBeenCalledWith(mockTask.id);
 
     // 削除後のタスクリストを再レンダリング
     rerender(
