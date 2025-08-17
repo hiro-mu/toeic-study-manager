@@ -72,9 +72,6 @@ export default function Home() {
   };
 
   const handleDeleteTask = (taskId: number) => {
-    const confirmed = window.confirm('このタスクを削除しますか？この操作は取り消せません。');
-    if (!confirmed) return;
-
     const newUncompletedTasks = uncompletedTasks.filter((task: Task) => task.id !== taskId);
     setUncompletedTasks(newUncompletedTasks);
     localStorage.setItem('toeicTasks', JSON.stringify(newUncompletedTasks));

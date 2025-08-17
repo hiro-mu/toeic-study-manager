@@ -13,63 +13,9 @@ describe('タスク削除機能', () => {
   beforeEach(() => {
     mockOnComplete.mockClear();
     mockOnDelete.mockClear();
-    mockConfirm = jest.spyOn(window, 'confirm').mockReturnValue(true);
   });
 
-  afterEach(() => {
-    mockConfirm.mockRestore();
-  });
-
-  test('タスクが正しく削除されることを確認', () => {
-    render(
-      <TaskList
-        tasks={mockTasks}
-        onCompleteTask={mockOnComplete}
-        onDeleteTask={mockOnDelete}
-      />
-    );
-
-    const deleteButton = screen.getByText('削除');
-    fireEvent.click(deleteButton);
-
-    expect(mockConfirm).toHaveBeenCalledWith('このタスクを削除しますか？');
-    expect(mockOnDelete).toHaveBeenCalledWith(mockTask.id);
-  });
-
-  test('削除確認ダイアログが呼び出されること', () => {
-    render(
-      <TaskList
-        tasks={mockTasks}
-        onCompleteTask={mockOnComplete}
-        onDeleteTask={mockOnDelete}
-      />
-    );
-
-    const deleteButton = screen.getByText('削除');
-    fireEvent.click(deleteButton);
-
-    expect(mockConfirm).toHaveBeenCalledWith('このタスクを削除しますか？');
-  });
-
-  test('削除確認ダイアログでキャンセルを選択した場合、タスクが削除されないこと', () => {
-    mockConfirm.mockReturnValueOnce(false);
-
-    render(
-      <TaskList
-        tasks={mockTasks}
-        onCompleteTask={mockOnComplete}
-        onDeleteTask={mockOnDelete}
-      />
-    );
-
-    const deleteButton = screen.getByText('削除');
-    fireEvent.click(deleteButton);
-
-    expect(mockConfirm).toHaveBeenCalledWith('このタスクを削除しますか？');
-    expect(mockOnDelete).not.toHaveBeenCalled();
-  });
-
-  test('削除後にタスクがリストから削除されることを確認', () => {
+  test('削除ボタンをクリックしたとき、モーダルが表示され、削除するを選択した場合、タスクが正しく削除されることを確認', () => {
     const { rerender } = render(
       <TaskList
         tasks={mockTasks}
@@ -81,7 +27,12 @@ describe('タスク削除機能', () => {
     const deleteButton = screen.getByText('削除');
     fireEvent.click(deleteButton);
 
-    expect(mockConfirm).toHaveBeenCalledWith('このタスクを削除しますか？');
+    // タスクを削除しますか？の文字が表示されることを確認
+    expect(screen.getByText('タスクを削除しますか？')).toBeInTheDocument();
+
+    // 削除確認ダイアログでOKをクリック
+    const confirmButton = screen.getByText('削除する');
+    fireEvent.click(confirmButton);
     expect(mockOnDelete).toHaveBeenCalledWith(mockTask.id);
 
     // 削除後のタスクリストを再レンダリング
@@ -93,6 +44,32 @@ describe('タスク削除機能', () => {
       />
     );
 
+    // タスクが削除されたことを確認
     expect(screen.queryByText(mockTask.title)).not.toBeInTheDocument();
+  });
+
+  test('削除ボタンをクリックしたとき、モーダルが表示され、キャンセルを選択した場合、タスクが削除されないこと', () => {
+    render(
+      <TaskList
+        tasks={mockTasks}
+        onCompleteTask={mockOnComplete}
+        onDeleteTask={mockOnDelete}
+      />
+    );
+
+    const deleteButton = screen.getByText('削除');
+    fireEvent.click(deleteButton);
+
+    // タスクを削除しますか？の文字が表示されることを確認
+    expect(screen.getByText('タスクを削除しますか？')).toBeInTheDocument();
+
+    // 削除確認ダイアログでOKをクリック
+    const cancelButton = screen.getByText('キャンセル');
+    fireEvent.click(cancelButton);
+    expect(mockOnDelete).not.toHaveBeenCalled();
+
+    // モーダルが閉じられ、タスクがまだ表示されることを確認
+    expect(screen.queryByText('タスクを削除しますか？')).not.toBeInTheDocument();
+    expect(screen.getByText(mockTask.title)).toBeInTheDocument();
   });
 });
