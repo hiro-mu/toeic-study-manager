@@ -157,6 +157,17 @@ export default function Home() {
             };
             setUncompletedTasks([...uncompletedTasks, newTask]);
             localStorage.setItem('toeicTasks', JSON.stringify([...uncompletedTasks, newTask]));
+          }} 
+          onAddBulkTasks={(tasksData) => {
+            const newTasks: Task[] = tasksData.map((taskData, index) => ({
+              id: Date.now() + index,
+              ...taskData,
+              completed: false,
+              createdAt: new Date().toISOString(),
+            }));
+            const updatedTasks = [...uncompletedTasks, ...newTasks];
+            setUncompletedTasks(updatedTasks);
+            localStorage.setItem('toeicTasks', JSON.stringify(updatedTasks));
           }} />
           <TaskList
             tasks={uncompletedTasks}
