@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { CompletionModal, type Task } from './CompletionModal';
+import DeleteConfirmModal from './DeleteConfirmModal';
 
 interface TaskListProps {
   tasks: Task[];
@@ -12,6 +13,8 @@ interface TaskListProps {
 export default function TaskList({ tasks, onCompleteTask, onDeleteTask }: TaskListProps) {
   const [currentTaskId, setCurrentTaskId] = useState<number | null>(null);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
   const [today] = useState(() => new Date().toISOString().split('T')[0]);
 
   // タスクを日付順にソート
@@ -32,6 +35,23 @@ export default function TaskList({ tasks, onCompleteTask, onDeleteTask }: TaskLi
     }
   };
 
+  const handleDeleteClick = (task: Task) => {
+    setTaskToDelete(task);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (taskToDelete) {
+      onDeleteTask(taskToDelete.id);
+      setShowDeleteModal(false);
+      setTaskToDelete(null);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+    setTaskToDelete(null);
+  };
   const getCategoryColor = (category: string) => {
     const colors: { [key: string]: string } = {
       listening: 'bg-blue-100 text-blue-700',
@@ -78,7 +98,7 @@ export default function TaskList({ tasks, onCompleteTask, onDeleteTask }: TaskLi
                   </button>
                 )}
                 <button
-                  onClick={() => onDeleteTask(task.id)}
+                  onClick={() => handleDeleteClick(task)}
                   className="px-3 py-1 text-sm bg-red-500 text-white rounded-lg hover:opacity-90"
                 >
                   削除
@@ -104,6 +124,13 @@ export default function TaskList({ tasks, onCompleteTask, onDeleteTask }: TaskLi
         isOpen={showCompletionModal}
         onClose={() => setShowCompletionModal(false)}
         onComplete={handleCompletionSubmit}
+      />
+      
+      <DeleteConfirmModal
+        isOpen={showDeleteModal}
+        taskTitle={taskToDelete?.title || ''}
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
       />
     </div>
   );
