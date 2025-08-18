@@ -41,6 +41,8 @@ export default function Header({ goals, onUpdateGoals }: HeaderProps) {
             onChange={handleTargetScoreChange}
             placeholder="目標スコアを入力"
             className="p-3 border-2 border-black-200 rounded-lg text-base text-black w-full"
+            step="10"
+            min="0"
           />
         </div>
         <div>
