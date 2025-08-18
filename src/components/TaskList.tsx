@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { CompletionModal, type Task } from './CompletionModal';
 import DeleteConfirmModal from './DeleteConfirmModal';
 

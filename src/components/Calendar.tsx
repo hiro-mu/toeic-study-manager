@@ -79,11 +79,9 @@ export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
       const dayStr = String(day).padStart(2, '0');
       const dateString = `${year}-${month}-${dayStr}`;
       const tasksForDate = getTasksForDate(dateString);
-      const hasTasks = tasksForDate.length > 0;
+      const hasUncompletedTasks = tasksForDate.some(task => !task.completed);
       const hasCompletedTasks = tasksForDate.some(task => task.completed);
       const isExam = isExamDate(dateString);
-
-      const hasUncompletedTasks = tasksForDate.some(task => !task.completed);
 
       let bgClass = '';
       if (isExam) {
