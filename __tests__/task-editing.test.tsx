@@ -69,7 +69,7 @@ describe('タスク編集機能', () => {
     fireEvent.change(titleInput, { target: { value: '編集されたタスク' } });
 
     // カテゴリーを変更
-    const categorySelect = screen.getByDisplayValue('reading');
+    const categorySelect = screen.getByDisplayValue('リーディング');
     fireEvent.change(categorySelect, { target: { value: 'listening' } });
 
     // 期限を変更

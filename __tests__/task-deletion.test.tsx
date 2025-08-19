@@ -7,12 +7,14 @@ import { Task } from '@/types';
 describe('タスク削除機能', () => {
   const mockOnComplete = jest.fn();
   const mockOnDelete = jest.fn();
+  const mockOnEdit = jest.fn();
   const mockTasks: Task[] = [mockTask];
   let mockConfirm: jest.SpyInstance;
 
   beforeEach(() => {
     mockOnComplete.mockClear();
     mockOnDelete.mockClear();
+    mockOnEdit.mockClear();
   });
 
   test('削除ボタンをクリックしたとき、モーダルが表示され、削除するを選択した場合、タスクが正しく削除されることを確認', () => {
@@ -21,6 +23,7 @@ describe('タスク削除機能', () => {
         tasks={mockTasks}
         onCompleteTask={mockOnComplete}
         onDeleteTask={mockOnDelete}
+        onEditTask={mockOnEdit}
       />
     );
 
@@ -41,6 +44,7 @@ describe('タスク削除機能', () => {
         tasks={[]}
         onCompleteTask={mockOnComplete}
         onDeleteTask={mockOnDelete}
+        onEditTask={mockOnEdit}
       />
     );
 
@@ -54,6 +58,7 @@ describe('タスク削除機能', () => {
         tasks={mockTasks}
         onCompleteTask={mockOnComplete}
         onDeleteTask={mockOnDelete}
+        onEditTask={mockOnEdit}
       />
     );
 
