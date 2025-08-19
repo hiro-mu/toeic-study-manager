@@ -77,6 +77,20 @@ export default function Home() {
     localStorage.setItem('toeicTasks', JSON.stringify(newUncompletedTasks));
   };
 
+  const handleEditTask = (taskId: number, updatedTask: {
+    title: string;
+    category: string;
+    description: string;
+    dueDate: string;
+  }) => {
+    const newUncompletedTasks = uncompletedTasks.map((task: Task) => 
+      task.id === taskId 
+        ? { ...task, ...updatedTask }
+        : task
+    );
+    setUncompletedTasks(newUncompletedTasks);
+    localStorage.setItem('toeicTasks', JSON.stringify(newUncompletedTasks));
+  };
   const calculateStats = () => {
     const totalTasks = uncompletedTasks.length + completedTasks.length;
     const completionRate = totalTasks > 0
@@ -173,6 +187,7 @@ export default function Home() {
             tasks={uncompletedTasks}
             onCompleteTask={handleCompleteTask}
             onDeleteTask={handleDeleteTask}
+            onEditTask={handleEditTask}
           />
         </div>
         <div className="bg-white p-5 rounded-2xl shadow-lg">

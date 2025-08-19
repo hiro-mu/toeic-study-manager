@@ -3,18 +3,27 @@
 import { useState } from 'react';
 import { CompletionModal, type Task } from './CompletionModal';
 import DeleteConfirmModal from './DeleteConfirmModal';
+import TaskEditModal from './TaskEditModal';
 
 interface TaskListProps {
   tasks: Task[];
   onCompleteTask: (taskId: number, completionData: { time: number; difficulty: string; focus: string }) => void;
   onDeleteTask: (taskId: number) => void;
+  onEditTask: (taskId: number, updatedTask: {
+    title: string;
+    category: string;
+    description: string;
+    dueDate: string;
+  }) => void;
 }
 
-export default function TaskList({ tasks, onCompleteTask, onDeleteTask }: TaskListProps) {
+export default function TaskList({ tasks, onCompleteTask, onDeleteTask, onEditTask }: TaskListProps) {
   const [currentTaskId, setCurrentTaskId] = useState<number | null>(null);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
   const [today] = useState(() => new Date().toISOString().split('T')[0]);
 
   // タスクを日付順にソート
@@ -52,6 +61,28 @@ export default function TaskList({ tasks, onCompleteTask, onDeleteTask }: TaskLi
     setShowDeleteModal(false);
     setTaskToDelete(null);
   };
+
+  const handleEditClick = (task: Task) => {
+    setTaskToEdit(task);
+    setShowEditModal(true);
+  };
+
+  const handleEditSave = (taskId: number, updatedTask: {
+    title: string;
+    category: string;
+    description: string;
+    dueDate: string;
+  }) => {
+    onEditTask(taskId, updatedTask);
+    setShowEditModal(false);
+    setTaskToEdit(null);
+  };
+
+  const handleEditCancel = () => {
+    setShowEditModal(false);
+    setTaskToEdit(null);
+  };
+
   const getCategoryColor = (category: string) => {
     const colors: { [key: string]: string } = {
       listening: 'bg-blue-100 text-blue-700',
@@ -87,8 +118,20 @@ export default function TaskList({ tasks, onCompleteTask, onDeleteTask }: TaskLi
               }`}
           >
             <div className="flex justify-between items-center mb-2">
-              <h3 className="font-bold text-black">{task.title}</h3>
+              <h3 
+                className="font-bold text-black cursor-pointer hover:text-blue-600 transition-colors"
+                onClick={() => handleEditClick(task)}
+                title="クリックして編集"
+              >
+                {task.title}
+              </h3>
               <div className="space-x-2">
+                <button
+                  onClick={() => handleEditClick(task)}
+                  className="px-3 py-1 text-sm bg-gray-500 text-white rounded-lg hover:opacity-90"
+                >
+                  編集
+                </button>
                 {!task.completed && (
                   <button
                     onClick={() => handleCompleteTask(task.id)}
@@ -131,6 +174,13 @@ export default function TaskList({ tasks, onCompleteTask, onDeleteTask }: TaskLi
         taskTitle={taskToDelete?.title || ''}
         onConfirm={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
+      />
+      
+      <TaskEditModal
+        isOpen={showEditModal}
+        task={taskToEdit}
+        onClose={handleEditCancel}
+        onSave={handleEditSave}
       />
     </div>
   );
