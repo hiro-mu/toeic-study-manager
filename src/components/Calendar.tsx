@@ -58,7 +58,7 @@ export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
     calendar.push(
       <div key="weekdays" className="grid grid-cols-7 gap-1">
         {['日', '月', '火', '水', '木', '金', '土'].map(day => (
-          <div key={day} className="text-center font-bold text-black">
+          <div key={day} className="text-center font-bold text-primary">
             {day}
           </div>
         ))}
@@ -97,7 +97,7 @@ export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
       week.push(
         <div
           key={dateString}
-          className={`p-2 text-center border border-black rounded-md ${isExam ? 'text-white' : 'text-black'} ${bgClass} ${(hasUncompletedTasks || hasCompletedTasks || isExam) ? 'cursor-pointer hover:opacity-80' : ''
+          className={`p-2 text-center border border-black rounded-md ${isExam ? 'text-white' : 'text-primary'} ${bgClass} ${(hasUncompletedTasks || hasCompletedTasks || isExam) ? 'cursor-pointer hover:opacity-80' : ''
             }`}
           style={!isExam && hasUncompletedTasks && hasCompletedTasks ? {
             background: 'linear-gradient(to right, rgb(191 219 254) 50%, rgb(187 247 208) 50%)'
@@ -142,9 +142,9 @@ export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
-        <button onClick={prevMonth} className="px-4 py-2 rounded-md border border-black hover:bg-black-100 text-black">前の月</button>
-        <h2 className="text-xl font-bold text-black">{formatMonth(displayDate)}</h2>
-        <button onClick={nextMonth} className="px-4 py-2 rounded-md border border-black hover:bg-black-100 text-black">次の月</button>
+        <button onClick={prevMonth} className="px-4 py-2 rounded-md border border-black hover:bg-black-100 text-primary">前の月</button>
+        <h2 className="text-xl font-bold text-primary">{formatMonth(displayDate)}</h2>
+        <button onClick={nextMonth} className="px-4 py-2 rounded-md border border-black hover:bg-black-100 text-primary">次の月</button>
       </div>
       <div className="space-y-2">
         {renderCalendar()}
@@ -154,15 +154,15 @@ export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
       <div className="mt-4 flex flex-wrap gap-4 text-sm">
         <div className="flex items-center">
           <div className="w-4 h-4 bg-blue-200 rounded mr-2"></div>
-          <span className="text-black">未完了タスク</span>
+          <span className="text-primary">未完了タスク</span>
         </div>
         <div className="flex items-center">
           <div className="w-4 h-4 bg-green-200 rounded mr-2"></div>
-          <span className="text-black">完了済みタスク</span>
+          <span className="text-primary">完了済みタスク</span>
         </div>
         <div className="flex items-center">
           <div className="w-4 h-4 bg-red-500 rounded mr-2"></div>
-          <span className="text-black">試験日</span>
+          <span className="text-primary">試験日</span>
         </div>
       </div>
       

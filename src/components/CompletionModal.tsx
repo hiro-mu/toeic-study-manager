@@ -55,10 +55,10 @@ function CompletionModal({ isOpen, onClose, onComplete }: CompletionModalProps) 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full">
-        <h3 className="text-xl font-bold mb-4 text-gray-900">タスク完了記録</h3>
+        <h3 className="text-xl font-bold mb-4 text-primary">タスク完了記録</h3>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-900 mb-1" htmlFor="estimated-time">
+          <label className="block text-sm font-medium text-primary mb-1" htmlFor="estimated-time">
             所要時間（分）:
           </label>
           <input
@@ -70,7 +70,7 @@ function CompletionModal({ isOpen, onClose, onComplete }: CompletionModalProps) 
             }}
             min="1"
             placeholder="30"
-            className="w-full p-2 border rounded-lg text-gray-900"
+            className="w-full p-2 border rounded-lg text-primary"
             id="estimated-time"
           />
           {error && (
@@ -81,13 +81,13 @@ function CompletionModal({ isOpen, onClose, onComplete }: CompletionModalProps) 
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-900 mb-1" htmlFor="difficulty">
+          <label className="block text-sm font-medium text-primary mb-1" htmlFor="difficulty">
             難易度:
           </label>
           <select
             value={difficulty}
             onChange={(e) => setDifficulty(e.target.value)}
-            className="w-full p-2 border rounded-lg text-gray-900"
+            className="w-full p-2 border rounded-lg text-primary"
             id="difficulty"
           >
             <option value="easy">易しい</option>
@@ -97,13 +97,13 @@ function CompletionModal({ isOpen, onClose, onComplete }: CompletionModalProps) 
         </div>
 
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-900 mb-1" htmlFor="focus">
+          <label className="block text-sm font-medium text-primary mb-1" htmlFor="focus">
             集中度:
           </label>
           <select
             value={focus}
             onChange={(e) => setFocus(e.target.value)}
-            className="w-full p-2 border rounded-lg text-gray-900"
+            className="w-full p-2 border rounded-lg text-primary"
             id="focus"
           >
             <option value="focused">集中できた</option>
@@ -115,7 +115,7 @@ function CompletionModal({ isOpen, onClose, onComplete }: CompletionModalProps) 
         <div className="flex justify-end space-x-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-gray-400 border hover:bg-black-100 rounded-lg"
+            className="px-4 py-2 text-secondary border hover:bg-black-100 rounded-lg"
           >
             キャンセル
           </button>
