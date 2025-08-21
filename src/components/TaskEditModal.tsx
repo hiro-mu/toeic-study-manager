@@ -80,10 +80,10 @@ export default function TaskEditModal({ isOpen, task, onClose, onSave }: TaskEdi
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-2xl shadow-xl max-w-md w-full mx-4">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-bold text-gray-900">タスクを編集</h3>
+          <h3 className="text-xl font-bold text-primary">タスクを編集</h3>
           <button
             onClick={handleClose}
-            className="text-gray-600 hover:text-gray-900"
+            className="text-secondary hover:text-primary"
           >
             ✕
           </button>
@@ -97,7 +97,7 @@ export default function TaskEditModal({ isOpen, task, onClose, onSave }: TaskEdi
           )}
 
           <div>
-            <label htmlFor="editTaskTitle" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="editTaskTitle" className="block text-sm font-medium text-primary mb-1">
               タスク名
             </label>
             <input
@@ -109,20 +109,20 @@ export default function TaskEditModal({ isOpen, task, onClose, onSave }: TaskEdi
                 setError('');
               }}
               placeholder="タスク名を入力"
-              className="w-full p-3 border-2 border-gray-200 rounded-lg text-base text-black"
+              className="w-full p-3 border-2 border-gray-200 rounded-lg text-base text-primary"
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="editTaskCategory" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="editTaskCategory" className="block text-sm font-medium text-primary mb-1">
                 カテゴリー
               </label>
               <select
                 id="editTaskCategory"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full p-3 border-2 border-gray-200 rounded-lg text-base text-black"
+                className="w-full p-3 border-2 border-gray-200 rounded-lg text-base text-primary"
               >
                 <option value="other">その他</option>
                 <option value="listening">リスニング</option>
@@ -133,7 +133,7 @@ export default function TaskEditModal({ isOpen, task, onClose, onSave }: TaskEdi
             </div>
 
             <div>
-              <label htmlFor="editTaskDueDate" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="editTaskDueDate" className="block text-sm font-medium text-primary mb-1">
                 期限
               </label>
               <input
@@ -144,13 +144,13 @@ export default function TaskEditModal({ isOpen, task, onClose, onSave }: TaskEdi
                   setDueDate(e.target.value);
                   setError('');
                 }}
-                className="w-full p-3 border-2 border-gray-200 rounded-lg text-base text-black"
+                className="w-full p-3 border-2 border-gray-200 rounded-lg text-base text-primary"
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="editTaskDescription" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="editTaskDescription" className="block text-sm font-medium text-primary mb-1">
               説明（任意）
             </label>
             <textarea
@@ -158,7 +158,7 @@ export default function TaskEditModal({ isOpen, task, onClose, onSave }: TaskEdi
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="説明を入力（任意）"
-              className="w-full p-3 border-2 border-gray-200 rounded-lg text-base h-24 resize-none text-black"
+              className="w-full p-3 border-2 border-gray-200 rounded-lg text-base h-24 resize-none text-primary"
             />
           </div>
 
@@ -166,7 +166,7 @@ export default function TaskEditModal({ isOpen, task, onClose, onSave }: TaskEdi
             <button
               type="button"
               onClick={handleClose}
-              className="px-4 py-2 text-gray-600 border border-gray-300 hover:bg-gray-100 rounded-lg"
+              className="px-4 py-2 text-secondary border border-gray-300 hover:bg-gray-100 rounded-lg"
             >
               キャンセル
             </button>

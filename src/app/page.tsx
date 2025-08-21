@@ -132,7 +132,7 @@ export default function Home() {
       <Header goals={goals} onUpdateGoals={handleUpdateGoals} />
 
       <div className="bg-white p-5 rounded-2xl shadow-lg mb-5">
-        <h3 className="text-xl font-bold mb-3 text-black">学習進捗</h3>
+        <h3 className="text-xl font-bold mb-3 text-primary">学習進捗</h3>
         <div className="h-5 bg-black-200 rounded-full overflow-hidden">
           <div
             className="h-full bg-gradient-to-r from-blue-400 to-purple-600 transition-all"
@@ -142,26 +142,26 @@ export default function Home() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-5">
           <div className="bg-black-50 p-4 rounded-xl text-center">
             <div className="text-2xl font-bold text-blue-600">{stats.completionRate}%</div>
-            <div className="text-sm text-black">完了率</div>
+            <div className="text-sm text-secondary">完了率</div>
           </div>
           <div className="bg-black-50 p-4 rounded-xl text-center">
             <div className="text-2xl font-bold text-blue-600">{stats.totalHours}h</div>
-            <div className="text-sm text-black">総学習時間</div>
+            <div className="text-sm text-secondary">総学習時間</div>
           </div>
           <div className="bg-black-50 p-4 rounded-xl text-center">
             <div className="text-2xl font-bold text-blue-600">{stats.remainingDays}</div>
-            <div className="text-sm text-black">残り日数</div>
+            <div className="text-sm text-secondary">残り日数</div>
           </div>
           <div className="bg-black-50 p-4 rounded-xl text-center">
             <div className="text-2xl font-bold text-blue-600">{stats.dailyTasksNeeded}</div>
-            <div className="text-sm text-black">1日必要タスク</div>
+            <div className="text-sm text-secondary">1日必要タスク</div>
           </div>
         </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-5">
         <div className="bg-white p-5 rounded-2xl shadow-lg">
-          <h2 className="text-xl font-bold mb-4 text-black">📝 タスク管理</h2>
+          <h2 className="text-xl font-bold mb-4 text-primary">📝 タスク管理</h2>
           <TaskForm onAddTask={(taskData) => {
             const newTask: Task = {
               id: Date.now(),
@@ -191,7 +191,7 @@ export default function Home() {
           />
         </div>
         <div className="bg-white p-5 rounded-2xl shadow-lg">
-          <h2 className="text-xl font-bold mb-4 text-black">📊 進捗可視化</h2>
+          <h2 className="text-xl font-bold mb-4 text-primary">📊 進捗可視化</h2>
           <Calendar 
             tasks={[...uncompletedTasks, ...completedTasks]} 
             currentDate={new Date()} 

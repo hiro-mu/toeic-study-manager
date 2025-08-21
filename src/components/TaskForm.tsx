@@ -106,7 +106,7 @@ export default function TaskForm({ onAddTask, onAddBulkTasks }: TaskFormProps) {
             onChange={() => setIsRangeMode(false)}
             className="mr-2"
           />
-          <span className="text-sm font-medium text-gray-700">単発タスク</span>
+          <span className="text-sm font-medium text-primary">単発タスク</span>
         </label>
         <label className="flex items-center">
           <input
@@ -116,7 +116,7 @@ export default function TaskForm({ onAddTask, onAddBulkTasks }: TaskFormProps) {
             onChange={() => setIsRangeMode(true)}
             className="mr-2"
           />
-          <span className="text-sm font-medium text-gray-700">期間タスク（一括作成）</span>
+          <span className="text-sm font-medium text-primary">期間タスク（一括作成）</span>
         </label>
       </div>
 
@@ -127,7 +127,7 @@ export default function TaskForm({ onAddTask, onAddBulkTasks }: TaskFormProps) {
         </div>
       )}
       <div>
-        <label htmlFor="taskTitle" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="taskTitle" className="block text-sm font-medium text-primary mb-1">
           タスク名
         </label>
         <input
@@ -139,20 +139,20 @@ export default function TaskForm({ onAddTask, onAddBulkTasks }: TaskFormProps) {
             setError('');
           }}
           placeholder="タスク名を入力"
-          className="w-full p-3 border-2 border-black-200 rounded-lg text-base text-black"
+          className="w-full p-3 border-2 border-black-200 rounded-lg text-base text-primary"
         />
       </div>
 
       <div className={`grid grid-cols-1 ${isRangeMode ? 'md:grid-cols-1' : 'md:grid-cols-2'} gap-4`}>
         <div>
-          <label htmlFor="taskCategory" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="taskCategory" className="block text-sm font-medium text-primary mb-1">
             カテゴリー
           </label>
           <select
             id="taskCategory"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full p-3 border-2 border-black-200 rounded-lg text-base text-black"
+            className="w-full p-3 border-2 border-black-200 rounded-lg text-base text-primary"
           >
             <option value="other">カテゴリーを選択</option>
             <option value="listening">リスニング</option>
@@ -164,7 +164,7 @@ export default function TaskForm({ onAddTask, onAddBulkTasks }: TaskFormProps) {
 
         {!isRangeMode ? (
           <div>
-            <label htmlFor="taskDueDate" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="taskDueDate" className="block text-sm font-medium text-primary mb-1">
               期限
             </label>
             <input
@@ -175,13 +175,13 @@ export default function TaskForm({ onAddTask, onAddBulkTasks }: TaskFormProps) {
                 setDueDate(e.target.value);
                 setError('');
               }}
-              className="w-full p-3 border-2 border-black-200 rounded-lg text-base text-black"
+              className="w-full p-3 border-2 border-black-200 rounded-lg text-base text-primary"
             />
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="startDate" className="block text-sm font-medium text-primary mb-1">
                 開始日
               </label>
               <input
@@ -192,11 +192,11 @@ export default function TaskForm({ onAddTask, onAddBulkTasks }: TaskFormProps) {
                   setStartDate(e.target.value);
                   setError('');
                 }}
-                className="w-full p-3 border-2 border-black-200 rounded-lg text-base text-black"
+                className="w-full p-3 border-2 border-black-200 rounded-lg text-base text-primary"
               />
             </div>
             <div>
-              <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="endDate" className="block text-sm font-medium text-primary mb-1">
                 終了日
               </label>
               <input
@@ -207,7 +207,7 @@ export default function TaskForm({ onAddTask, onAddBulkTasks }: TaskFormProps) {
                   setEndDate(e.target.value);
                   setError('');
                 }}
-                className="w-full p-3 border-2 border-black-200 rounded-lg text-base text-black"
+                className="w-full p-3 border-2 border-black-200 rounded-lg text-base text-primary"
               />
             </div>
           </div>
@@ -215,7 +215,7 @@ export default function TaskForm({ onAddTask, onAddBulkTasks }: TaskFormProps) {
       </div>
 
       <div>
-        <label htmlFor="taskDescription" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="taskDescription" className="block text-sm font-medium text-primary mb-1">
           説明（任意）
         </label>
         <textarea
@@ -226,13 +226,13 @@ export default function TaskForm({ onAddTask, onAddBulkTasks }: TaskFormProps) {
             setError('');
           }}
           placeholder={isRangeMode ? "説明を入力（任意）- 各日のタスクに共通で適用されます" : "説明を入力（任意）"}
-          className="w-full p-3 border-2 border-black-200 rounded-lg text-base h-24 resize-none text-black"
+          className="w-full p-3 border-2 border-black-200 rounded-lg text-base h-24 resize-none text-primary"
         />
       </div>
 
       {isRangeMode && startDate && endDate && new Date(startDate) <= new Date(endDate) && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-          <p className="text-sm text-blue-700">
+          <p className="text-sm text-primary">
             📅 {new Date(startDate).toLocaleDateString('ja-JP')} から {new Date(endDate).toLocaleDateString('ja-JP')} まで、
             <strong>{Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)) + 1}個</strong>のタスクが作成されます
           </p>

@@ -119,7 +119,7 @@ export default function TaskList({ tasks, onCompleteTask, onDeleteTask, onEditTa
           >
             <div className="flex justify-between items-center mb-2">
               <h3 
-                className="font-bold text-black cursor-pointer hover:text-blue-600 transition-colors"
+                className="font-bold text-primary cursor-pointer hover:text-blue-600 transition-colors"
                 onClick={() => handleEditClick(task)}
                 title="クリックして編集"
               >
@@ -149,7 +149,7 @@ export default function TaskList({ tasks, onCompleteTask, onDeleteTask, onEditTa
               </div>
             </div>
 
-            <div className="text-sm text-black">
+            <div className="text-sm text-secondary">
               <span className={`inline-block px-2 py-1 rounded-full text-xs font-bold mr-2 ${categoryClass}`}>
                 {getCategoryName(task.category)}
               </span>
@@ -157,7 +157,7 @@ export default function TaskList({ tasks, onCompleteTask, onDeleteTask, onEditTa
             </div>
 
             {task.description && (
-              <p className="mt-2 text-sm text-black">{task.description}</p>
+              <p className="mt-2 text-sm text-secondary">{task.description}</p>
             )}
           </div>
         );
