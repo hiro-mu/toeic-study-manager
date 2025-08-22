@@ -82,6 +82,7 @@ export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
       const hasUncompletedTasks = tasksForDate.some(task => !task.completed);
       const hasCompletedTasks = tasksForDate.some(task => task.completed);
       const isExam = isExamDate(dateString);
+      const taskCount = tasksForDate.length;
 
       let bgClass = '';
       if (isExam) {
@@ -110,6 +111,24 @@ export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
         >
           <div className="relative">
             {day}
+            {/* タスク数表示 */}
+            {taskCount > 0 && !isExam && (
+              <div className="absolute -top-1 -right-1 flex flex-col items-center">
+                {taskCount === 1 ? (
+                  <div className="w-2 h-2 bg-blue-500 rounded-full border border-white"></div>
+                ) : taskCount <= 3 ? (
+                  <div className="flex space-x-0.5">
+                    {Array.from({ length: Math.min(taskCount, 3) }).map((_, i) => (
+                      <div key={i} className="w-1.5 h-1.5 bg-blue-500 rounded-full border border-white"></div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border border-white">
+                    {taskCount > 9 ? '9+' : taskCount}
+                  </div>
+                )}
+              </div>
+            )}
             {isExam && (
               <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full border border-white"></div>
             )}
@@ -163,6 +182,22 @@ export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
         <div className="flex items-center">
           <div className="w-4 h-4 bg-red-500 rounded mr-2"></div>
           <span className="text-primary">試験日</span>
+        </div>
+        <div className="flex items-center">
+          <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+          <span className="text-primary">1タスク</span>
+        </div>
+        <div className="flex items-center">
+          <div className="flex space-x-0.5 mr-2">
+            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+          </div>
+          <span className="text-primary">2-3タスク</span>
+        </div>
+        <div className="flex items-center">
+          <div className="bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold mr-2">4</div>
+          <span className="text-primary">4+タスク</span>
         </div>
       </div>
       
