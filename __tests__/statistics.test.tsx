@@ -1,5 +1,5 @@
-import { calculateProgress, calculateDaysLeft, calculateRequiredTasksPerDay, calculateTotalStudyTime, calculateCategoryStats } from '@/utils/statistics';
 import { Task, TaskCategory } from '@/types';
+import { calculateCategoryStats, calculateDaysLeft, calculateProgress, calculateRequiredTasksPerDay, calculateTotalStudyTime } from '@/utils/statistics';
 import { mockTask } from './utils';
 
 describe('統計計算機能', () => {
@@ -115,7 +115,7 @@ describe('カテゴリ別進捗計算機能', () => {
 
     // 結果の検証
     expect(categoryStats).toHaveLength(6);
-    
+
     const readingStats = categoryStats.find(stat => stat.category === 'reading');
     expect(readingStats).toEqual({
       category: 'reading',
@@ -185,7 +185,7 @@ describe('カテゴリ別進捗計算機能', () => {
 
     const categoryStats = calculateCategoryStats(tasks);
     const readingStats = categoryStats.find(stat => stat.category === 'reading');
-    
+
     expect(readingStats).toEqual({
       category: 'reading',
       completed: 2,
@@ -210,13 +210,13 @@ describe('カテゴリ別進捗計算機能', () => {
     ];
 
     const categoryStats = calculateCategoryStats(tasks);
-    
+
     const readingStats = categoryStats.find(stat => stat.category === 'reading');
     expect(readingStats?.percentage).toBe(100);
-    
+
     const listeningStats = categoryStats.find(stat => stat.category === 'listening');
     expect(listeningStats?.percentage).toBe(100);
-    
+
     const grammarStats = categoryStats.find(stat => stat.category === 'grammar');
     expect(grammarStats?.percentage).toBe(100);
   });
@@ -229,13 +229,13 @@ describe('カテゴリ別進捗計算機能', () => {
     ];
 
     const categoryStats = calculateCategoryStats(tasks);
-    
+
     const readingStats = categoryStats.find(stat => stat.category === 'reading');
     expect(readingStats?.percentage).toBe(0);
-    
+
     const listeningStats = categoryStats.find(stat => stat.category === 'listening');
     expect(listeningStats?.percentage).toBe(0);
-    
+
     const vocabularyStats = categoryStats.find(stat => stat.category === 'vocabulary');
     expect(vocabularyStats?.percentage).toBe(0);
   });
@@ -250,7 +250,7 @@ describe('カテゴリ別進捗計算機能', () => {
 
     const categoryStats = calculateCategoryStats(tasks);
     const readingStats = categoryStats.find(stat => stat.category === 'reading');
-    
+
     expect(readingStats?.percentage).toBe(33);
   });
 
@@ -258,7 +258,7 @@ describe('カテゴリ別進捗計算機能', () => {
     // 各カテゴリに50個ずつタスクを作成（計300個）
     const tasks: Task[] = [];
     const categories: TaskCategory[] = ['reading', 'listening', 'grammar', 'vocabulary', 'mock-test', 'other'];
-    
+
     categories.forEach((category, categoryIndex) => {
       for (let i = 0; i < 50; i++) {
         tasks.push({
@@ -271,7 +271,7 @@ describe('カテゴリ別進捗計算機能', () => {
     });
 
     const categoryStats = calculateCategoryStats(tasks);
-    
+
     // 全カテゴリで25/50 = 50%になるはず
     categoryStats.forEach(stat => {
       expect(stat.completed).toBe(25);
@@ -294,7 +294,7 @@ describe('カテゴリ別進捗計算機能', () => {
 
     const categoryStats = calculateCategoryStats(tasks);
     const readingStats = categoryStats.find(stat => stat.category === 'reading');
-    
+
     expect(readingStats?.percentage).toBe(29); // Math.round(28.57) = 29
   });
 
@@ -304,22 +304,22 @@ describe('カテゴリ別進捗計算機能', () => {
     ];
 
     const categoryStats = calculateCategoryStats(tasks);
-    
+
     // 戻り値が正しい構造になっていることを確認
     expect(Array.isArray(categoryStats)).toBe(true);
     expect(categoryStats).toHaveLength(6);
-    
+
     categoryStats.forEach(stat => {
       expect(stat).toHaveProperty('category');
       expect(stat).toHaveProperty('completed');
       expect(stat).toHaveProperty('total');
       expect(stat).toHaveProperty('percentage');
-      
+
       expect(typeof stat.category).toBe('string');
       expect(typeof stat.completed).toBe('number');
       expect(typeof stat.total).toBe('number');
       expect(typeof stat.percentage).toBe('number');
-      
+
       expect(stat.completed).toBeGreaterThanOrEqual(0);
       expect(stat.total).toBeGreaterThanOrEqual(0);
       expect(stat.percentage).toBeGreaterThanOrEqual(0);

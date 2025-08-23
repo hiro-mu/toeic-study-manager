@@ -1,14 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import Header from '@/components/Header';
-import TaskList from '@/components/TaskList';
-import TaskForm from '@/components/TaskForm';
-import type { Task, TaskCategory, Goal } from '@/types';
 import Calendar from '@/components/Calendar';
+import Header from '@/components/Header';
+import TaskForm from '@/components/TaskForm';
+import TaskList from '@/components/TaskList';
 import { useAuth } from '@/hooks/useAuth';
 import { FirestoreService } from '@/lib/dataService';
+import type { Goal, Task, TaskCategory } from '@/types';
 import { calculateCategoryStats } from '@/utils/statistics';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
   const [uncompletedTasks, setUncompletedTasks] = useState<Task[]>([]);
@@ -237,9 +237,19 @@ export default function Home() {
 
         {/* メインコンテンツ */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* 進捗可視化セクション - モバイルで優先表示 */}
+          <div className="bg-white rounded-2xl p-6 shadow-lg lg:order-2">
+            <h2 className="text-xl font-bold mb-4 text-primary">📊進捗可視化</h2>
+            <Calendar
+              tasks={[...uncompletedTasks, ...completedTasks]}
+              currentDate={new Date()}
+              goals={goals}
+            />
+          </div>
+
           {/* タスク管理セクション */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg">
-            <h2 className="text-xl font-bold mb-4 text-primary">📝 タスク管理</h2>
+          <div className="bg-white rounded-2xl p-6 shadow-lg lg:order-1">
+            <h2 className="text-xl font-bold mb-4 text-primary">📝タスク管理</h2>
             <TaskForm
               onAddTask={handleAddTask}
               onAddBulkTasks={handleAddBulkTasks}
@@ -252,16 +262,6 @@ export default function Home() {
                 onEditTask={handleEditTask}
               />
             </div>
-          </div>
-
-          {/* カレンダーセクション */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg">
-            <h2 className="text-xl font-bold mb-4 text-primary">📊 進捗可視化</h2>
-            <Calendar
-              tasks={[...uncompletedTasks, ...completedTasks]}
-              currentDate={new Date()}
-              goals={goals}
-            />
           </div>
         </div>
 

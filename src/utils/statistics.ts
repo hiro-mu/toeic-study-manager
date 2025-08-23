@@ -24,7 +24,7 @@ export function calculateProgress(tasks: Task[]): number {
  */
 export function calculateCategoryStats(tasks: Task[]): CategoryStats[] {
   const categories: TaskCategory[] = ['reading', 'listening', 'grammar', 'vocabulary', 'mock-test', 'other'];
-  
+
   return categories.map(category => {
     const categoryTasks = tasks.filter(task => task.category === category);
     const completed = categoryTasks.filter(task => task.completed).length;
@@ -45,11 +45,11 @@ export function calculateCategoryStats(tasks: Task[]): CategoryStats[] {
  */
 export function calculateDaysLeft(examDate: string, today: Date = new Date()): number {
   if (!examDate) return 0;
-  
+
   const exam = new Date(examDate);
   const diffTime = exam.getTime() - today.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  
+
   return diffDays > 0 ? diffDays : 0;
 }
 

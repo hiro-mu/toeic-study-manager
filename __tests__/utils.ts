@@ -1,6 +1,6 @@
+import { Goal, Task } from '@/types';
 import { render } from '@testing-library/react';
 import { ReactElement } from 'react';
-import { Task, Goal } from '@/types';
 
 // テストユーティリティ関数
 export function renderWithProviders(ui: ReactElement) {
