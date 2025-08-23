@@ -1,16 +1,50 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
 import Calendar from '@/components/Calendar';
 import { Task } from '@/types';
+import '@testing-library/jest-dom';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { mockTask } from './utils';
+
+// TaskModalのモック
+jest.mock('@/components/TaskModal', () => {
+  return function MockTaskModal({ tasks, date, onClose, onCompleteTask, onEditTask, onDeleteTask }: any) {
+    return (
+      <div data-testid="task-modal">
+        <h2>{new Date(date).toLocaleDateString('ja-JP', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })}のタスク</h2>
+        <button onClick={onClose}>✕</button>
+        {onCompleteTask && <button data-testid="complete-handler">完了機能あり</button>}
+        {onEditTask && <button data-testid="edit-handler">編集機能あり</button>}
+        {onDeleteTask && <button data-testid="delete-handler">削除機能あり</button>}
+        {tasks.map((task: Task) => (
+          <div key={task.id} data-testid={`task-${task.id}`}>
+            {task.title}
+          </div>
+        ))}
+      </div>
+    );
+  };
+});
 
 describe('カレンダー表示機能', () => {
   const today = new Date('2025-08-13');
   const tasks: Task[] = [
-    { ...mockTask, id: 1, dueDate: '2025-08-13', completed: false },
-    { ...mockTask, id: 2, dueDate: '2025-08-13', completed: true },
-    { ...mockTask, id: 3, dueDate: '2025-08-14', completed: false },
+    { ...mockTask, id: '1', dueDate: '2025-08-13', completed: false },
+    { ...mockTask, id: '2', dueDate: '2025-08-13', completed: true },
+    { ...mockTask, id: '3', dueDate: '2025-08-14', completed: false },
   ];
+
+  const mockHandlers = {
+    onCompleteTask: jest.fn(),
+    onEditTask: jest.fn(),
+    onDeleteTask: jest.fn()
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
   test('現在の月のカレンダーが正しく生成されることを確認', () => {
     render(<Calendar tasks={tasks} currentDate={today} />);
@@ -70,18 +104,40 @@ describe('カレンダー表示機能', () => {
   });
 
   test('タスクのある日付をクリックするとモーダルが表示されることを確認', () => {
+    render(<Calendar tasks={tasks} currentDate={today} {...mockHandlers} />);
+
+    const day13Cell = screen.getByText('13').closest('div[class*="p-2"]');
+    fireEvent.click(day13Cell!);
+
+    expect(screen.getByTestId('task-modal')).toBeInTheDocument();
+    expect(screen.getByText('2025年8月13日のタスク')).toBeInTheDocument();
+
+    const closeButton = screen.getByText('✕');
+    fireEvent.click(closeButton);
+
+    expect(screen.queryByTestId('task-modal')).not.toBeInTheDocument();
+  });
+
+  test('TaskModalにコールバック関数が正しく渡されることを確認', () => {
+    render(<Calendar tasks={tasks} currentDate={today} {...mockHandlers} />);
+
+    const day13Cell = screen.getByText('13').closest('div[class*="p-2"]');
+    fireEvent.click(day13Cell!);
+
+    expect(screen.getByTestId('complete-handler')).toBeInTheDocument();
+    expect(screen.getByTestId('edit-handler')).toBeInTheDocument();
+    expect(screen.getByTestId('delete-handler')).toBeInTheDocument();
+  });
+
+  test('コールバック関数が提供されていない場合、TaskModalにも渡されないことを確認', () => {
     render(<Calendar tasks={tasks} currentDate={today} />);
 
     const day13Cell = screen.getByText('13').closest('div[class*="p-2"]');
     fireEvent.click(day13Cell!);
 
-    expect(screen.getByText('2025年8月13日のタスク')).toBeInTheDocument();
-    expect(screen.getAllByText(/完了/).length).toBeGreaterThan(0);
-
-    const closeButton = screen.getByText('✕');
-    fireEvent.click(closeButton);
-
-    expect(screen.queryByText('2025年8月13日のタスク')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('complete-handler')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('edit-handler')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('delete-handler')).not.toBeInTheDocument();
   });
 
   test('試験日が設定されている場合、カレンダー上で正しく表示されることを確認', () => {

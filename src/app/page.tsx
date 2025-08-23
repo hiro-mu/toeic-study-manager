@@ -244,6 +244,9 @@ export default function Home() {
               tasks={[...uncompletedTasks, ...completedTasks]}
               currentDate={new Date()}
               goals={goals}
+              onCompleteTask={handleCompleteTask}
+              onEditTask={handleEditTask}
+              onDeleteTask={handleDeleteTask}
             />
           </div>
 

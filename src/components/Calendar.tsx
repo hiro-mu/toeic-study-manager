@@ -1,16 +1,35 @@
 'use client';
 
+import { Goal, Task } from '@/types';
 import { useState } from 'react';
-import { Task, Goal } from '@/types';
 import TaskModal from './TaskModal';
 
 interface CalendarProps {
   tasks: Task[];
   currentDate: Date;
   goals?: Goal | null;
+  onCompleteTask?: (taskId: string, completionData: {
+    time: number;
+    difficulty: string;
+    focus: string;
+  }) => void;
+  onEditTask?: (taskId: string, updatedTask: {
+    title: string;
+    category: 'reading' | 'listening' | 'grammar' | 'vocabulary' | 'mock-test' | 'other';
+    description: string;
+    dueDate: string;
+  }) => void;
+  onDeleteTask?: (taskId: string) => void;
 }
 
-export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
+export default function Calendar({
+  tasks,
+  currentDate,
+  goals,
+  onCompleteTask,
+  onEditTask,
+  onDeleteTask
+}: CalendarProps) {
   const [displayDate, setDisplayDate] = useState(currentDate);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
@@ -274,6 +293,9 @@ export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
               tasks={getTasksForDate(selectedDate)}
               date={selectedDate}
               onClose={() => setSelectedDate(null)}
+              onCompleteTask={onCompleteTask}
+              onEditTask={onEditTask}
+              onDeleteTask={onDeleteTask}
             />
           )}
         </>

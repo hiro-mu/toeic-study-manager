@@ -1,17 +1,20 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import Calendar from '@/components/Calendar';
 import TaskList from '@/components/TaskList';
-import { mockTask } from './utils';
 import { Task } from '@/types';
+import '@testing-library/jest-dom';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { mockTask } from './utils';
 
 describe('タスク完了機能', () => {
   const mockOnComplete = jest.fn();
   const mockOnDelete = jest.fn();
+  const mockOnEdit = jest.fn();
   const mockTasks: Task[] = [mockTask];
 
   beforeEach(() => {
     mockOnComplete.mockClear();
     mockOnDelete.mockClear();
+    mockOnEdit.mockClear();
   });
 
   test('タスク完了時に完了状態が正しく更新されること', () => {
@@ -24,6 +27,7 @@ describe('タスク完了機能', () => {
         tasks={tasks}
         onCompleteTask={mockOnComplete}
         onDeleteTask={mockOnDelete}
+        onEditTask={mockOnEdit}
       />
     );
 
@@ -50,6 +54,7 @@ describe('タスク完了機能', () => {
         tasks={[completedTask]}
         onCompleteTask={mockOnComplete}
         onDeleteTask={mockOnDelete}
+        onEditTask={mockOnEdit}
       />
     );
 
@@ -65,6 +70,7 @@ describe('タスク完了機能', () => {
         tasks={mockTasks}
         onCompleteTask={mockOnComplete}
         onDeleteTask={mockOnDelete}
+        onEditTask={mockOnEdit}
       />
     );
 
@@ -77,6 +83,7 @@ describe('タスク完了機能', () => {
         tasks={[]}
         onCompleteTask={mockOnComplete}
         onDeleteTask={mockOnDelete}
+        onEditTask={mockOnEdit}
       />
     );
 
@@ -89,6 +96,7 @@ describe('タスク完了機能', () => {
         tasks={mockTasks}
         onCompleteTask={mockOnComplete}
         onDeleteTask={mockOnDelete}
+        onEditTask={mockOnEdit}
       />
     );
 
@@ -107,6 +115,7 @@ describe('タスク完了機能', () => {
         tasks={mockTasks}
         onCompleteTask={mockOnComplete}
         onDeleteTask={mockOnDelete}
+        onEditTask={mockOnEdit}
       />
     );
 
@@ -120,5 +129,53 @@ describe('タスク完了機能', () => {
     fireEvent.click(modalCompleteButton);
 
     expect(screen.getByRole('alert')).toHaveTextContent('所要時間を正しく入力してください');
+  });
+
+  // カレンダー経由のタスク完了テスト
+  test('カレンダーモーダルからタスク完了ができることを確認', async () => {
+    const testTasks: Task[] = [
+      { ...mockTask, id: '1', dueDate: '2025-08-13', completed: false }
+    ];
+
+    render(
+      <Calendar
+        tasks={testTasks}
+        currentDate={new Date('2025-08-13')}
+        onCompleteTask={mockOnComplete}
+        onEditTask={mockOnEdit}
+        onDeleteTask={mockOnDelete}
+      />
+    );
+
+    // カレンダーの日付をクリック
+    const day13Cell = screen.getByText('13').closest('div[class*="p-2"]');
+    fireEvent.click(day13Cell!);
+
+    // TaskModalが開いていることを確認
+    expect(screen.getByText('2025年8月13日のタスク')).toBeInTheDocument();
+
+    // 完了ボタンをクリック
+    const completeButton = screen.getByTitle('完了にする');
+    fireEvent.click(completeButton);
+
+    // 完了モーダルが表示されることを確認
+    await waitFor(() => {
+      expect(screen.getByText('タスク完了記録')).toBeInTheDocument();
+    });
+
+    // 学習時間を入力
+    const timeInput = screen.getByLabelText('所要時間（分）:');
+    fireEvent.change(timeInput, { target: { value: '45' } });
+
+    // 完了記録ボタンをクリック
+    const recordButton = screen.getByText('完了記録');
+    fireEvent.click(recordButton);
+
+    // コールバックが正しく呼ばれることを確認
+    expect(mockOnComplete).toHaveBeenCalledWith('1', {
+      time: 45,
+      difficulty: 'normal',
+      focus: 'normal'
+    });
   });
 });
