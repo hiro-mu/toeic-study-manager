@@ -177,11 +177,11 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
         <div className="bg-white rounded-2xl p-8 shadow-lg text-center max-w-md">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">🔐 認証が必要です</h2>
+          <h2 className="text-2xl font-bold text-primary mb-4">🔐 認証が必要です</h2>
           {authError && (
             <p className="text-red-600 mb-4">エラー: {authError}</p>
           )}
-          <p className="text-gray-600 mb-6">
+          <p className="text-secondary mb-6">
             TOEIC学習管理アプリを使用するには認証が必要です。
           </p>
           <button
@@ -220,24 +220,24 @@ export default function Home() {
         {/* 統計カード */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white rounded-2xl p-6 shadow-lg">
-            <h3 className="text-lg font-bold text-gray-800 mb-2">📊 全体進捗</h3>
+            <h3 className="text-lg font-bold text-primary mb-2">📊 全体進捗</h3>
             <div className="text-3xl font-bold text-blue-600">{stats.completionRate}%</div>
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-secondary">
               {completedTasks.length} / {stats.totalTasks} タスク完了
             </div>
           </div>
 
           <div className="bg-white rounded-2xl p-6 shadow-lg">
-            <h3 className="text-lg font-bold text-gray-800 mb-2">🎯 今週の目標</h3>
-            <div className="text-sm text-gray-600">
+            <h3 className="text-lg font-bold text-primary mb-2">🎯 今週の目標</h3>
+            <div className="text-sm text-secondary">
               {goals?.targetScore ? `目標スコア: ${goals.targetScore}点` : '目標未設定'}
             </div>
           </div>
 
           <div className="bg-white rounded-2xl p-6 shadow-lg">
-            <h3 className="text-lg font-bold text-gray-800 mb-2">📅 残りタスク</h3>
+            <h3 className="text-lg font-bold text-primary mb-2">📅 残りタスク</h3>
             <div className="text-3xl font-bold text-orange-500">{uncompletedTasks.length}</div>
-            <div className="text-sm text-gray-600">今日: {
+            <div className="text-sm text-secondary">今日: {
               uncompletedTasks.filter(task => task.dueDate === new Date().toISOString().split('T')[0]).length
             }</div>
           </div>
@@ -280,8 +280,8 @@ export default function Home() {
             {stats.categoryStats.map(({ category, completed, total, percentage }) => (
               <div key={category} className="border rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="font-medium capitalize">{category}</span>
-                  <span className="text-sm text-gray-600">{percentage}%</span>
+                  <span className="font-medium capitalize text-primary">{category}</span>
+                  <span className="text-sm text-secondary">{percentage}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
@@ -289,7 +289,7 @@ export default function Home() {
                     style={{ width: `${percentage}%` }}
                   ></div>
                 </div>
-                <div className="text-xs text-gray-600 mt-1">
+                <div className="text-xs text-secondary mt-1">
                   {completed} / {total} 完了
                 </div>
               </div>

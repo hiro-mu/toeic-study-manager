@@ -35,15 +35,15 @@ export default function Header({ completedTasks, totalTasks, completionRate, goa
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
         <div className="text-center">
           <div className="text-2xl font-bold text-blue-600">{completionRate}%</div>
-          <div className="text-sm text-gray-600">完了率</div>
+          <div className="text-sm text-secondary">完了率</div>
         </div>
         <div className="text-center">
           <div className="text-2xl font-bold text-green-600">{completedTasks}</div>
-          <div className="text-sm text-gray-600">完了タスク</div>
+          <div className="text-sm text-secondary">完了タスク</div>
         </div>
         <div className="text-center">
           <div className="text-2xl font-bold text-orange-600">{totalTasks - completedTasks}</div>
-          <div className="text-sm text-gray-600">残りタスク</div>
+          <div className="text-sm text-secondary">残りタスク</div>
         </div>
       </div>
 

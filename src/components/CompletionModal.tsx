@@ -54,7 +54,7 @@ function CompletionModal({ isOpen, onClose, onComplete }: CompletionModalProps) 
             }}
             min="1"
             placeholder="30"
-            className="w-full p-2 border rounded-lg text-primary"
+            className="w-full p-2 border border-gray-200 rounded-lg text-primary"
             id="estimated-time"
           />
           {error && (
@@ -71,7 +71,7 @@ function CompletionModal({ isOpen, onClose, onComplete }: CompletionModalProps) 
           <select
             value={difficulty}
             onChange={(e) => setDifficulty(e.target.value)}
-            className="w-full p-2 border rounded-lg text-primary"
+            className="w-full p-2 border border-gray-200 rounded-lg text-primary"
             id="difficulty"
           >
             <option value="easy">易しい</option>
@@ -87,7 +87,7 @@ function CompletionModal({ isOpen, onClose, onComplete }: CompletionModalProps) 
           <select
             value={focus}
             onChange={(e) => setFocus(e.target.value)}
-            className="w-full p-2 border rounded-lg text-primary"
+            className="w-full p-2 border border-gray-200 rounded-lg text-primary"
             id="focus"
           >
             <option value="focused">集中できた</option>
@@ -99,7 +99,7 @@ function CompletionModal({ isOpen, onClose, onComplete }: CompletionModalProps) 
         <div className="flex justify-end space-x-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-secondary border hover:bg-black-100 rounded-lg"
+            className="px-4 py-2 text-secondary border border-gray-300 hover:bg-gray-100 rounded-lg"
           >
             キャンセル
           </button>

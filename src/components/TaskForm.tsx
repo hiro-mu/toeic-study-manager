@@ -140,7 +140,7 @@ export default function TaskForm({ onAddTask, onAddBulkTasks }: TaskFormProps) {
               setError('');
             }}
             placeholder="タスク名を入力"
-            className="w-full p-3 border-2 border-black-200 rounded-lg text-base text-primary"
+            className="w-full p-3 border-2 border-gray-200 rounded-lg text-base text-primary"
           />
         </div>
 
@@ -153,7 +153,7 @@ export default function TaskForm({ onAddTask, onAddBulkTasks }: TaskFormProps) {
               id="taskCategory"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full p-3 border-2 border-black-200 rounded-lg text-base text-primary"
+              className="w-full p-3 border-2 border-gray-200 rounded-lg text-base text-primary"
             >
               <option value="other">カテゴリーを選択</option>
               <option value="listening">リスニング</option>
@@ -176,7 +176,7 @@ export default function TaskForm({ onAddTask, onAddBulkTasks }: TaskFormProps) {
                   setDueDate(e.target.value);
                   setError('');
                 }}
-                className="w-full p-3 border-2 border-black-200 rounded-lg text-base text-primary"
+                className="w-full p-3 border-2 border-gray-200 rounded-lg text-base text-primary"
               />
             </div>
           ) : (
@@ -193,7 +193,7 @@ export default function TaskForm({ onAddTask, onAddBulkTasks }: TaskFormProps) {
                     setStartDate(e.target.value);
                     setError('');
                   }}
-                  className="w-full p-3 border-2 border-black-200 rounded-lg text-base text-primary"
+                  className="w-full p-3 border-2 border-gray-200 rounded-lg text-base text-primary"
                 />
               </div>
               <div>
@@ -208,7 +208,7 @@ export default function TaskForm({ onAddTask, onAddBulkTasks }: TaskFormProps) {
                     setEndDate(e.target.value);
                     setError('');
                   }}
-                  className="w-full p-3 border-2 border-black-200 rounded-lg text-base text-primary"
+                  className="w-full p-3 border-2 border-gray-200 rounded-lg text-base text-primary"
                 />
               </div>
             </div>
@@ -227,7 +227,7 @@ export default function TaskForm({ onAddTask, onAddBulkTasks }: TaskFormProps) {
               setError('');
             }}
             placeholder={isRangeMode ? "説明を入力（任意）- 各日のタスクに共通で適用されます" : "説明を入力（任意）"}
-            className="w-full p-3 border-2 border-black-200 rounded-lg text-base h-24 resize-none text-primary"
+            className="w-full p-3 border-2 border-gray-200 rounded-lg text-base h-24 resize-none text-primary"
           />
         </div>
 

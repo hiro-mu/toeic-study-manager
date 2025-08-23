@@ -188,9 +188,9 @@ export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
-        <button onClick={prevMonth} className="px-4 py-2 rounded-md border border-black hover:bg-black-100 text-primary">前の月</button>
+        <button onClick={prevMonth} className="px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-100 text-primary">前の月</button>
         <h2 className="text-xl font-bold text-primary">{formatMonth(displayDate)}</h2>
-        <button onClick={nextMonth} className="px-4 py-2 rounded-md border border-black hover:bg-black-100 text-primary">次の月</button>
+        <button onClick={nextMonth} className="px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-100 text-primary">次の月</button>
       </div>
       <div className="space-y-2">
         {renderCalendar()}
