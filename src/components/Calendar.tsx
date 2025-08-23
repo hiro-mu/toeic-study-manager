@@ -22,6 +22,12 @@ export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
     return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
   };
 
+  const isToday = (dateString: string) => {
+    const today = new Date();
+    const todayString = today.toISOString().split('T')[0];
+    return dateString === todayString;
+  };
+
   const formatMonth = (date: Date) => {
     return `${date.getMonth() + 1}月 ${date.getFullYear()}`;
   };
@@ -82,9 +88,13 @@ export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
       const hasUncompletedTasks = tasksForDate.some(task => !task.completed);
       const hasCompletedTasks = tasksForDate.some(task => task.completed);
       const isExam = isExamDate(dateString);
+      const isTodayDate = isToday(dateString);
       const taskCount = tasksForDate.length;
 
       let bgClass = '';
+      let borderClass = '';
+      let textClass = '';
+      
       if (isExam) {
         bgClass = 'bg-red-500 text-white font-bold border-red-600 exam-date';
       } else if (hasUncompletedTasks && hasCompletedTasks) {
@@ -94,12 +104,25 @@ export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
       } else if (hasCompletedTasks) {
         bgClass = 'has-completed-task bg-green-200 hover:bg-green-300';
       }
+      
+      // 今日の日付の特別なスタイリング
+      if (isTodayDate) {
+        if (isExam) {
+          borderClass = 'ring-4 ring-yellow-400 ring-opacity-75';
+        } else {
+          borderClass = 'ring-3 ring-blue-500 ring-opacity-75';
+          if (!hasUncompletedTasks && !hasCompletedTasks) {
+            bgClass = 'bg-blue-50 border-blue-300';
+          }
+        }
+        textClass = 'font-bold';
+      }
 
       week.push(
         <div
           key={dateString}
-          className={`p-2 text-center border border-black rounded-md ${isExam ? 'text-white' : 'text-primary'} ${bgClass} ${(hasUncompletedTasks || hasCompletedTasks || isExam) ? 'cursor-pointer hover:opacity-80' : ''
-            }`}
+          className={`p-2 text-center border border-black rounded-md ${isExam ? 'text-white' : 'text-primary'} ${bgClass} ${borderClass} ${textClass} ${(hasUncompletedTasks || hasCompletedTasks || isExam) ? 'cursor-pointer hover:opacity-80' : ''
+            } ${isTodayDate ? 'today-highlight' : ''}`}
           style={!isExam && hasUncompletedTasks && hasCompletedTasks ? {
             background: 'linear-gradient(to right, rgb(191 219 254) 50%, rgb(187 247 208) 50%)'
           } : undefined}
@@ -111,26 +134,30 @@ export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
         >
           <div className="relative">
             {day}
+            {/* 今日のマーカー */}
+            {isTodayDate && !isExam && (
+              <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-500 rounded-full"></div>
+            )}
             {/* タスク数表示 */}
             {taskCount > 0 && !isExam && (
-              <div className="absolute -top-1 -right-1 flex flex-col items-center">
+              <div className={`absolute -top-1 -right-1 flex flex-col items-center ${isTodayDate ? 'z-10' : ''}`}>
                 {taskCount === 1 ? (
-                  <div className="w-2 h-2 bg-blue-500 rounded-full border border-white"></div>
+                  <div className={`w-2 h-2 ${isTodayDate ? 'bg-orange-500 ring-1 ring-orange-300' : 'bg-blue-500'} rounded-full border border-white`}></div>
                 ) : taskCount <= 3 ? (
                   <div className="flex space-x-0.5">
                     {Array.from({ length: Math.min(taskCount, 3) }).map((_, i) => (
-                      <div key={i} className="w-1.5 h-1.5 bg-blue-500 rounded-full border border-white"></div>
+                      <div key={i} className={`w-1.5 h-1.5 ${isTodayDate ? 'bg-orange-500 ring-1 ring-orange-300' : 'bg-blue-500'} rounded-full border border-white`}></div>
                     ))}
                   </div>
                 ) : (
-                  <div className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border border-white">
+                  <div className={`${isTodayDate ? 'bg-orange-600 ring-2 ring-orange-300' : 'bg-red-500'} text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border border-white`}>
                     {taskCount > 9 ? '9+' : taskCount}
                   </div>
                 )}
               </div>
             )}
             {isExam && (
-              <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full border border-white"></div>
+              <div className={`absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full border border-white ${isTodayDate ? 'ring-2 ring-yellow-300' : ''}`}></div>
             )}
           </div>
         </div>
@@ -172,6 +199,12 @@ export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
       {/* カレンダーの凡例 */}
       <div className="mt-4 flex flex-wrap gap-4 text-sm">
         <div className="flex items-center">
+          <div className="w-4 h-4 bg-blue-50 border-2 border-blue-500 rounded mr-2 relative">
+            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-500 rounded-full"></div>
+          </div>
+          <span className="text-primary font-semibold">今日</span>
+        </div>
+        <div className="flex items-center">
           <div className="w-4 h-4 bg-blue-200 rounded mr-2"></div>
           <span className="text-primary">未完了タスク</span>
         </div>
@@ -182,6 +215,12 @@ export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
         <div className="flex items-center">
           <div className="w-4 h-4 bg-red-500 rounded mr-2"></div>
           <span className="text-primary">試験日</span>
+        </div>
+        <div className="flex items-center">
+          <div className="w-4 h-4 bg-blue-50 border-2 border-blue-500 rounded mr-2 relative">
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-orange-500 rounded-full border border-white"></div>
+          </div>
+          <span className="text-primary font-semibold">今日のタスク</span>
         </div>
         <div className="flex items-center">
           <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
