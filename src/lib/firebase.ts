@@ -14,6 +14,18 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:123456789:web:abcdef",
 };
 
+// Debug: Firebase設定を確認
+if (process.env.NODE_ENV === 'development') {
+  console.log('🔧 Firebase Config Debug:', {
+    apiKey: firebaseConfig.apiKey ? `${firebaseConfig.apiKey.substring(0, 10)}...` : 'Not set',
+    authDomain: firebaseConfig.authDomain,
+    projectId: firebaseConfig.projectId,
+    storageBucket: firebaseConfig.storageBucket,
+    messagingSenderId: firebaseConfig.messagingSenderId,
+    appId: firebaseConfig.appId ? `${firebaseConfig.appId.substring(0, 20)}...` : 'Not set',
+  });
+}
+
 // Firebase app initialization
 const app = initializeApp(firebaseConfig);
 
@@ -23,8 +35,8 @@ export const auth = getAuth(app);
 // Firestore
 export const db = getFirestore(app);
 
-// Development environment setup
-if (process.env.NODE_ENV === 'development') {
+// Development environment setup - 一時的にエミュレーター接続を無効化
+if (false && process.env.NODE_ENV === 'development') {
   // Emulator接続 (一度だけ実行)
   const globalAny = globalThis as unknown as { _firestoreEmulatorConnected?: boolean };
   if (typeof window !== 'undefined' && !globalAny._firestoreEmulatorConnected) {
@@ -32,6 +44,7 @@ if (process.env.NODE_ENV === 'development') {
       connectAuthEmulator(auth, 'http://localhost:9098', { disableWarnings: true });
       connectFirestoreEmulator(db, 'localhost', 8081);
       globalAny._firestoreEmulatorConnected = true;
+      console.log('🔧 Firebase Emulator connected');
     } catch (error) {
       console.log('Emulator connection failed or already connected:', error);
     }

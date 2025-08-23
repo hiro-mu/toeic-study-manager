@@ -8,9 +8,9 @@ import type { Task, TaskCategory } from '@/types';
 
 interface TaskListProps {
   tasks: Task[];
-  onCompleteTask: (taskId: number, completionData: { time: number; difficulty: string; focus: string }) => void;
-  onDeleteTask: (taskId: number) => void;
-  onEditTask: (taskId: number, updatedTask: {
+  onCompleteTask: (taskId: string, completionData: { time: number; difficulty: string; focus: string }) => void;
+  onDeleteTask: (taskId: string) => void;
+  onEditTask: (taskId: string, updatedTask: {
     title: string;
     category: TaskCategory;
     description: string;
@@ -19,7 +19,7 @@ interface TaskListProps {
 }
 
 export default function TaskList({ tasks, onCompleteTask, onDeleteTask, onEditTask }: TaskListProps) {
-  const [currentTaskId, setCurrentTaskId] = useState<number | null>(null);
+  const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
@@ -32,7 +32,7 @@ export default function TaskList({ tasks, onCompleteTask, onDeleteTask, onEditTa
     new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
   );
 
-  const handleCompleteTask = (taskId: number) => {
+  const handleCompleteTask = (taskId: string) => {
     setCurrentTaskId(taskId);
     setShowCompletionModal(true);
   };
@@ -68,7 +68,7 @@ export default function TaskList({ tasks, onCompleteTask, onDeleteTask, onEditTa
     setShowEditModal(true);
   };
 
-  const handleEditSave = (taskId: number, updatedTask: {
+  const handleEditSave = (taskId: string, updatedTask: {
     title: string;
     category: string;
     description: string;

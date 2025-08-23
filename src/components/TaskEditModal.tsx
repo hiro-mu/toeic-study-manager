@@ -7,7 +7,7 @@ interface TaskEditModalProps {
   isOpen: boolean;
   task: Task | null;
   onClose: () => void;
-  onSave: (taskId: number, updatedTask: {
+  onSave: (taskId: string, updatedTask: {
     title: string;
     category: TaskCategory;
     description: string;

@@ -3,6 +3,7 @@ import {
   doc, 
   addDoc, 
   updateDoc, 
+  setDoc, 
   deleteDoc, 
   getDocs, 
   query, 
@@ -21,20 +22,32 @@ import type {
 } from '@/types';
 
 // Utility functions for data conversion
-export const convertTaskToFirebase = (task: Omit<Task, 'id'>, userId: string): Omit<FirebaseTask, 'id'> => ({
-  title: task.title,
-  category: task.category,
-  description: task.description || '',
-  dueDate: Timestamp.fromDate(new Date(task.dueDate)),
-  completed: task.completed,
-  createdAt: Timestamp.fromDate(new Date(task.createdAt)),
-  completedAt: task.completedAt ? Timestamp.fromDate(new Date(task.completedAt)) : undefined,
-  completionData: task.completionData,
-  userId
-});
+export const convertTaskToFirebase = (task: Omit<Task, 'id'>, userId: string): Omit<FirebaseTask, 'id'> => {
+  const firebaseTask: Record<string, unknown> = {
+    title: task.title,
+    category: task.category,
+    description: task.description || '',
+    dueDate: Timestamp.fromDate(new Date(task.dueDate)),
+    completed: task.completed,
+    createdAt: Timestamp.fromDate(new Date(task.createdAt)),
+    userId
+  };
+
+  // Only include completedAt if it exists
+  if (task.completedAt) {
+    firebaseTask.completedAt = Timestamp.fromDate(new Date(task.completedAt));
+  }
+
+  // Only include completionData if it exists
+  if (task.completionData) {
+    firebaseTask.completionData = task.completionData;
+  }
+
+  return firebaseTask as Omit<FirebaseTask, 'id'>;
+};
 
 export const convertFirebaseToTask = (firebaseTask: FirebaseTask): Task => ({
-  id: parseInt(firebaseTask.id) || Date.now(), // Firestore ID to number conversion
+  id: firebaseTask.id, // Keep Firestore ID as string
   title: firebaseTask.title,
   category: firebaseTask.category,
   description: firebaseTask.description,
@@ -115,7 +128,10 @@ export class FirestoreService {
         updateData.completedAt = Timestamp.now();
       }
     }
-    if (updatedTask.completionData) updateData.completionData = updatedTask.completionData;
+    // Only include completionData if it exists
+    if (updatedTask.completionData) {
+      updateData.completionData = updatedTask.completionData;
+    }
     
     await updateDoc(taskRef, updateData);
   }
@@ -127,11 +143,18 @@ export class FirestoreService {
 
   static async completeTask(userId: string, taskId: string, completionData: CompletionData): Promise<void> {
     const taskRef = doc(db, `users/${userId}/tasks`, taskId);
-    await updateDoc(taskRef, {
+    
+    const updateData: Record<string, unknown> = {
       completed: true,
-      completedAt: Timestamp.now(),
-      completionData
-    });
+      completedAt: Timestamp.now()
+    };
+
+    // Only include completionData if it exists
+    if (completionData) {
+      updateData.completionData = completionData;
+    }
+
+    await updateDoc(taskRef, updateData);
   }
 
   // Goal operations
@@ -149,7 +172,7 @@ export class FirestoreService {
   static async saveGoals(userId: string, goals: Goal): Promise<void> {
     const goalsRef = doc(db, `users/${userId}/profile`, 'goals');
     const firebaseGoal = convertGoalToFirebase(goals, userId);
-    await updateDoc(goalsRef, firebaseGoal);
+    await setDoc(goalsRef, firebaseGoal);
   }
 
   // Real-time subscriptions

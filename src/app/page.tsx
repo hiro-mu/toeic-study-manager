@@ -102,7 +102,7 @@ export default function Home() {
     }
   };
 
-  const handleCompleteTask = async (taskId: number, completionData: {
+  const handleCompleteTask = async (taskId: string, completionData: {
     time: number;
     difficulty: string;
     focus: string
@@ -110,7 +110,7 @@ export default function Home() {
     if (!user) return;
 
     try {
-      await FirestoreService.completeTask(user.uid, taskId.toString(), completionData);
+      await FirestoreService.completeTask(user.uid, taskId, completionData);
 
       // タスクリストを更新
       const [tasks, completedTasksData] = await Promise.all([
@@ -125,11 +125,11 @@ export default function Home() {
     }
   };
 
-  const handleDeleteTask = async (taskId: number) => {
+  const handleDeleteTask = async (taskId: string) => {
     if (!user) return;
 
     try {
-      await FirestoreService.deleteTask(user.uid, taskId.toString());
+      await FirestoreService.deleteTask(user.uid, taskId);
 
       // タスクリストを更新
       const [tasks, completedTasksData] = await Promise.all([
@@ -144,7 +144,7 @@ export default function Home() {
     }
   };
 
-  const handleEditTask = async (taskId: number, updatedTask: {
+  const handleEditTask = async (taskId: string, updatedTask: {
     title: string;
     category: TaskCategory;
     description: string;
@@ -153,7 +153,7 @@ export default function Home() {
     if (!user) return;
 
     try {
-      await FirestoreService.updateTask(user.uid, taskId.toString(), updatedTask);
+      await FirestoreService.updateTask(user.uid, taskId, updatedTask);
 
       // タスクリストを更新
       const tasks = await FirestoreService.getTasks(user.uid);
