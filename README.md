@@ -19,7 +19,8 @@ TOEIC学習の進捗管理アプリケーション。タスク管理、目標設
 
 ### データ管理
 
-- **LocalStorage** (クライアントサイドデータ永続化)
+- **LocalStorage** (クライアントサイドデータ永続化) - 既存実装
+- **Firebase Firestore** (クラウドデータベース) - 新実装・移行中
 - **React Hooks** (useState, useEffect)
 
 ## プロジェクト構成
@@ -241,6 +242,18 @@ npm run test:watch
 npm run test:coverage
 ```
 
+### 5. Firebase Emulator（開発環境）
+
+```bash
+# Firebase Emulatorの起動
+npm run emulator
+
+# Next.js + Emulator同時起動
+npm run dev:emulator
+```
+
+Firebase設定については `docs/firebase-setup-guide.md` を参照してください。
+
 ## 主要機能
 
 ### タスク管理
@@ -276,13 +289,43 @@ npm run test:coverage
 
 ## データ保存
 
-現在の実装では、すべてのデータをブラウザのLocalStorageに保存しています：
+アプリケーションは段階的にLocalStorageからFirebaseに移行中です：
 
-### LocalStorage構成
+### 現在のデータ保存方式
+
+- **既存データ**: ブラウザのLocalStorage
+- **新データ**: Firebase Firestore（匿名認証）
+- **移行機能**: 既存データの自動移行サポート
+
+### データ移行プロセス
+
+1. **移行検出**: 初回アクセス時にLocalStorageデータの存在を確認
+2. **移行ダイアログ**: ユーザーに移行の確認
+3. **匿名認証**: Firebase匿名ユーザーとして認証
+4. **データ移行**: LocalStorageからFirestoreに一括移行
+5. **検証**: 移行データの整合性確認
+6. **切り替え**: Firestoreをプライマリデータソースに設定
+
+### LocalStorage構成（移行前）
 
 - **`toeicTasks`**: 未完了タスクの配列
 - **`toeicCompletedTasks`**: 完了済みタスクの配列
 - **`toeicGoals`**: 目標設定（スコア、試験日）
+
+### Firestore構成（移行後）
+
+```
+users/{userId}/
+├── profile/
+│   └── goals (document)
+└── tasks/
+    ├── {taskId} (document)
+    └── ...
+```
+
+- **認証**: Firebase匿名認証
+- **セキュリティ**: ユーザー別データ分離
+- **オフライン**: 自動同期とオフライン対応
 
 ### データ構造
 

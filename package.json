@@ -8,9 +8,13 @@
     "start": "next start",
     "lint": "next lint",
     "test": "NODE_OPTIONS=--max_old_space_size=4096 jest --verbose",
-    "test:watch": "NODE_OPTIONS=--max_old_space_size=4096 jest --watch"
+    "test:watch": "NODE_OPTIONS=--max_old_space_size=4096 jest --watch",
+    "emulator": "firebase emulators:start --project demo-toeic-study-app",
+    "emulator:ui": "firebase emulators:start --project demo-toeic-study-app --only firestore,auth --inspect-functions",
+    "dev:emulator": "concurrently \"npm run emulator\" \"npm run dev\""
   },
   "dependencies": {
+    "firebase": "^12.1.0",
     "git": "^0.1.5",
     "next": "15.4.6",
     "react": "19.1.0",
@@ -27,8 +31,10 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^9.2.0",
     "eslint": "^9",
     "eslint-config-next": "15.4.6",
+    "firebase-tools": "^14.14.0",
     "jest": "^30.0.5",
     "jest-environment-jsdom": "^30.0.5",
     "tailwindcss": "^4",

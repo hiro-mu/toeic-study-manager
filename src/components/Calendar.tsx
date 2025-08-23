@@ -7,7 +7,7 @@ import TaskModal from './TaskModal';
 interface CalendarProps {
   tasks: Task[];
   currentDate: Date;
-  goals?: Goal;
+  goals?: Goal | null;
 }
 
 export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
@@ -94,7 +94,7 @@ export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
       let bgClass = '';
       let borderClass = '';
       let textClass = '';
-      
+
       if (isExam) {
         bgClass = 'bg-red-500 text-white font-bold border-red-600 exam-date';
       } else if (hasUncompletedTasks && hasCompletedTasks) {
@@ -104,7 +104,7 @@ export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
       } else if (hasCompletedTasks) {
         bgClass = 'has-completed-task bg-green-200 hover:bg-green-300';
       }
-      
+
       // 今日の日付の特別なスタイリング
       if (isTodayDate) {
         if (isExam) {
@@ -195,7 +195,7 @@ export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
       <div className="space-y-2">
         {renderCalendar()}
       </div>
-      
+
       {/* カレンダーの凡例 */}
       <div className="mt-4 flex flex-wrap gap-4 text-sm">
         <div className="flex items-center">
@@ -239,7 +239,7 @@ export default function Calendar({ tasks, currentDate, goals }: CalendarProps) {
           <span className="text-primary">4+タスク</span>
         </div>
       </div>
-      
+
       {selectedDate && (
         <>
           {isExamDate(selectedDate) ? (

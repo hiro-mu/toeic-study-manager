@@ -4,201 +4,305 @@ import { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import TaskList from '@/components/TaskList';
 import TaskForm from '@/components/TaskForm';
-import type { Task } from '@/components/CompletionModal';
+import type { Task, TaskCategory, Goal } from '@/types';
 import Calendar from '@/components/Calendar';
+import { useAuth } from '@/hooks/useAuth';
+import { FirestoreService } from '@/lib/dataService';
 
 export default function Home() {
   const [uncompletedTasks, setUncompletedTasks] = useState<Task[]>([]);
   const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
-  interface GoalsState {
-    targetScore: number;
-    examDate: string | null;
-  }
+  const [goals, setGoals] = useState<Goal | null>(null);
 
-  const [goals, setGoals] = useState<GoalsState>({
-    targetScore: 0,
-    examDate: null,
-  });
+  const { user, loading, error: authError, signInAnonymously } = useAuth();
 
-  useEffect(() => {
-    // ローカルストレージからデータを読み込む
-    if (typeof window !== 'undefined') {
-      const savedTasks = localStorage.getItem('toeicTasks');
-      const savedCompletedTasks = localStorage.getItem('toeicCompletedTasks');
-      const savedGoals = localStorage.getItem('toeicGoals');
-      if (savedTasks) setUncompletedTasks(JSON.parse(savedTasks));
-      if (savedCompletedTasks) setCompletedTasks(JSON.parse(savedCompletedTasks));
-      if (savedGoals) {
-        const parsedGoals = JSON.parse(savedGoals);
-        // examDateがnullでない場合、ISO形式の日付文字列（YYYY-MM-DD）に変換
-        let formattedExamDate = null;
-        if (parsedGoals.examDate) {
-          const date = new Date(parsedGoals.examDate);
-          formattedExamDate = date.toISOString().split('T')[0];
-        }
-        setGoals({
-          ...parsedGoals,
-          examDate: formattedExamDate
-        });
-      }
-    }
-  }, []);
+  // 統計計算
+  const calculateStats = () => {
+    const totalTasks = uncompletedTasks.length + completedTasks.length;
+    const completionRate = totalTasks > 0 ? Math.round((completedTasks.length / totalTasks) * 100) : 0;
 
-  const handleUpdateGoals = (newGoals: GoalsState) => {
-    setGoals(newGoals);
-    localStorage.setItem('toeicGoals', JSON.stringify(newGoals));
+    const categories = ['reading', 'listening', 'grammar', 'vocabulary', 'mock-test', 'other'] as const;
+    const categoryStats = categories.map(category => {
+      const completed = completedTasks.filter(task => task.category === category).length;
+      const total = [...uncompletedTasks, ...completedTasks].filter(task => task.category === category).length;
+
+      return {
+        category,
+        completed,
+        total,
+        percentage: total > 0 ? Math.round((completed / total) * 100) : 0
+      };
+    });
+
+    return { totalTasks, completionRate, categoryStats };
   };
 
-  const handleCompleteTask = (taskId: number, completionData: { time: number; difficulty: string; focus: string }) => {
-    const taskIndex = uncompletedTasks.findIndex((t: Task) => t.id === taskId);
-    if (taskIndex === -1) return;
+  // Firebase認証後のデータ読み込み
+  useEffect(() => {
+    const loadUserData = async () => {
+      if (!user) return;
 
-    const task = uncompletedTasks[taskIndex];
-    const completedTask: Task = {
-      ...task,
-      completed: true,
-      completedAt: new Date().toISOString(),
-      completionData,
+      try {
+        // タスクとゴールを並行して読み込み
+        const [tasks, completedTasksData, userGoals] = await Promise.all([
+          FirestoreService.getTasks(user.uid),
+          FirestoreService.getCompletedTasks(user.uid),
+          FirestoreService.getGoals(user.uid)
+        ]);
+
+        setUncompletedTasks(tasks);
+        setCompletedTasks(completedTasksData);
+        setGoals(userGoals);
+      } catch (error) {
+        console.error('Failed to load user data:', error);
+      }
     };
 
-    const newUncompletedTasks = [...uncompletedTasks];
-    newUncompletedTasks.splice(taskIndex, 1);
-    setUncompletedTasks(newUncompletedTasks);
+    loadUserData();
+  }, [user]);
 
-    setCompletedTasks([...completedTasks, completedTask]);
-
-    localStorage.setItem('toeicTasks', JSON.stringify(newUncompletedTasks));
-    localStorage.setItem('toeicCompletedTasks', JSON.stringify([...completedTasks, completedTask]));
-  };
-
-  const handleDeleteTask = (taskId: number) => {
-    const newUncompletedTasks = uncompletedTasks.filter((task: Task) => task.id !== taskId);
-    setUncompletedTasks(newUncompletedTasks);
-    localStorage.setItem('toeicTasks', JSON.stringify(newUncompletedTasks));
-  };
-
-  const handleEditTask = (taskId: number, updatedTask: {
+  // タスク操作ハンドラー
+  const handleAddTask = async (taskData: {
     title: string;
-    category: string;
+    category: TaskCategory;
     description: string;
     dueDate: string;
   }) => {
-    const newUncompletedTasks = uncompletedTasks.map((task: Task) => 
-      task.id === taskId 
-        ? { ...task, ...updatedTask }
-        : task
-    );
-    setUncompletedTasks(newUncompletedTasks);
-    localStorage.setItem('toeicTasks', JSON.stringify(newUncompletedTasks));
-  };
-  const calculateStats = () => {
-    const totalTasks = uncompletedTasks.length + completedTasks.length;
-    const completionRate = totalTasks > 0
-      ? Math.round((completedTasks.length / totalTasks) * 100)
-      : 0;
+    if (!user) return;
 
-    const totalTime = completedTasks.reduce((sum, task) => {
-      return sum + (task.completionData?.time || 0);
-    }, 0);
-    const totalHours = Math.round((totalTime / 60) * 10) / 10;
-
-    let remainingDays = '-';
-    let dailyTasksNeeded = '-';
-
-    if (goals.examDate) {
-      const today = new Date();
-      const examDate = new Date(goals.examDate);
-      const diffTime = examDate.getTime() - today.getTime();
-      const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-      remainingDays = daysLeft > 0 ? String(daysLeft) : '終了';
-      dailyTasksNeeded = daysLeft > 0
-        ? String(Math.ceil(uncompletedTasks.length / daysLeft))
-        : String(uncompletedTasks.length);
+    try {
+      await FirestoreService.addTask(user.uid, taskData);
+      // リアルタイム更新のため、再読み込み
+      const tasks = await FirestoreService.getTasks(user.uid);
+      setUncompletedTasks(tasks);
+    } catch (error) {
+      console.error('Failed to add task:', error);
     }
-
-    return {
-      completionRate,
-      totalHours,
-      remainingDays,
-      dailyTasksNeeded,
-    };
   };
+
+  const handleAddBulkTasks = async (tasksData: Array<{
+    title: string;
+    category: TaskCategory;
+    description: string;
+    dueDate: string;
+  }>) => {
+    if (!user) return;
+
+    try {
+      // 並行して複数のタスクを追加
+      await Promise.all(
+        tasksData.map(taskData => FirestoreService.addTask(user.uid, taskData))
+      );
+
+      // 再読み込み
+      const tasks = await FirestoreService.getTasks(user.uid);
+      setUncompletedTasks(tasks);
+    } catch (error) {
+      console.error('Failed to add bulk tasks:', error);
+    }
+  };
+
+  const handleCompleteTask = async (taskId: number, completionData: {
+    time: number;
+    difficulty: string;
+    focus: string
+  }) => {
+    if (!user) return;
+
+    try {
+      await FirestoreService.completeTask(user.uid, taskId.toString(), completionData);
+
+      // タスクリストを更新
+      const [tasks, completedTasksData] = await Promise.all([
+        FirestoreService.getTasks(user.uid),
+        FirestoreService.getCompletedTasks(user.uid)
+      ]);
+
+      setUncompletedTasks(tasks);
+      setCompletedTasks(completedTasksData);
+    } catch (error) {
+      console.error('Failed to complete task:', error);
+    }
+  };
+
+  const handleDeleteTask = async (taskId: number) => {
+    if (!user) return;
+
+    try {
+      await FirestoreService.deleteTask(user.uid, taskId.toString());
+
+      // タスクリストを更新
+      const [tasks, completedTasksData] = await Promise.all([
+        FirestoreService.getTasks(user.uid),
+        FirestoreService.getCompletedTasks(user.uid)
+      ]);
+
+      setUncompletedTasks(tasks);
+      setCompletedTasks(completedTasksData);
+    } catch (error) {
+      console.error('Failed to delete task:', error);
+    }
+  };
+
+  const handleEditTask = async (taskId: number, updatedTask: {
+    title: string;
+    category: TaskCategory;
+    description: string;
+    dueDate: string;
+  }) => {
+    if (!user) return;
+
+    try {
+      await FirestoreService.updateTask(user.uid, taskId.toString(), updatedTask);
+
+      // タスクリストを更新
+      const tasks = await FirestoreService.getTasks(user.uid);
+      setUncompletedTasks(tasks);
+    } catch (error) {
+      console.error('Failed to edit task:', error);
+    }
+  };
+
+  // 認証が必要な場合のローディング画面
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
+        <div className="text-white text-xl">認証情報を確認中...</div>
+      </div>
+    );
+  }
+
+  // 認証エラーまたは未認証の場合
+  if (authError || !user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
+        <div className="bg-white rounded-2xl p-8 shadow-lg text-center max-w-md">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">🔐 認証が必要です</h2>
+          {authError && (
+            <p className="text-red-600 mb-4">エラー: {authError}</p>
+          )}
+          <p className="text-gray-600 mb-6">
+            TOEIC学習管理アプリを使用するには認証が必要です。
+          </p>
+          <button
+            onClick={signInAnonymously}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+          >
+            匿名でログイン
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const stats = calculateStats();
 
   return (
-    <main className="container mx-auto px-4 py-5">
-      <Header goals={goals} onUpdateGoals={handleUpdateGoals} />
+    <div className="min-h-screen bg-gradient-to-br from-blue-400 to-purple-600">
+      <Header
+        completedTasks={completedTasks.length}
+        totalTasks={uncompletedTasks.length + completedTasks.length}
+        completionRate={stats.completionRate}
+        goals={goals}
+        onSaveGoals={async (newGoals) => {
+          if (user) {
+            try {
+              await FirestoreService.saveGoals(user.uid, newGoals);
+              setGoals(newGoals);
+            } catch (error) {
+              console.error('Failed to save goals:', error);
+            }
+          }
+        }}
+      />
 
-      <div className="bg-white p-5 rounded-2xl shadow-lg mb-5">
-        <h3 className="text-xl font-bold mb-3 text-primary">学習進捗</h3>
-        <div className="h-5 bg-black-200 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-blue-400 to-purple-600 transition-all"
-            style={{ width: `${stats.completionRate}%` }}
-          />
+      <div className="container mx-auto p-6 space-y-8">
+        {/* 統計カード */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white rounded-2xl p-6 shadow-lg">
+            <h3 className="text-lg font-bold text-gray-800 mb-2">📊 全体進捗</h3>
+            <div className="text-3xl font-bold text-blue-600">{stats.completionRate}%</div>
+            <div className="text-sm text-gray-600">
+              {completedTasks.length} / {stats.totalTasks} タスク完了
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 shadow-lg">
+            <h3 className="text-lg font-bold text-gray-800 mb-2">🎯 今週の目標</h3>
+            <div className="text-sm text-gray-600">
+              {goals?.targetScore ? `目標スコア: ${goals.targetScore}点` : '目標未設定'}
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 shadow-lg">
+            <h3 className="text-lg font-bold text-gray-800 mb-2">📅 残りタスク</h3>
+            <div className="text-3xl font-bold text-orange-500">{uncompletedTasks.length}</div>
+            <div className="text-sm text-gray-600">今日: {
+              uncompletedTasks.filter(task => task.dueDate === new Date().toISOString().split('T')[0]).length
+            }</div>
+          </div>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-5">
-          <div className="bg-black-50 p-4 rounded-xl text-center">
-            <div className="text-2xl font-bold text-blue-600">{stats.completionRate}%</div>
-            <div className="text-sm text-secondary">完了率</div>
+
+        {/* メインコンテンツ */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* タスク管理セクション */}
+          <div className="bg-white rounded-2xl p-6 shadow-lg">
+            <h2 className="text-xl font-bold mb-4 text-primary">📝 タスク管理</h2>
+            <TaskForm
+              onAddTask={handleAddTask}
+              onAddBulkTasks={handleAddBulkTasks}
+            />
+            <div className="mt-6">
+              <TaskList
+                tasks={uncompletedTasks}
+                onCompleteTask={handleCompleteTask}
+                onDeleteTask={handleDeleteTask}
+                onEditTask={handleEditTask}
+              />
+            </div>
           </div>
-          <div className="bg-black-50 p-4 rounded-xl text-center">
-            <div className="text-2xl font-bold text-blue-600">{stats.totalHours}h</div>
-            <div className="text-sm text-secondary">総学習時間</div>
+
+          {/* カレンダーセクション */}
+          <div className="bg-white rounded-2xl p-6 shadow-lg">
+            <h2 className="text-xl font-bold mb-4 text-primary">📊 進捗可視化</h2>
+            <Calendar
+              tasks={[...uncompletedTasks, ...completedTasks]}
+              currentDate={new Date()}
+              goals={goals}
+            />
           </div>
-          <div className="bg-black-50 p-4 rounded-xl text-center">
-            <div className="text-2xl font-bold text-blue-600">{stats.remainingDays}</div>
-            <div className="text-sm text-secondary">残り日数</div>
+        </div>
+
+        {/* カテゴリ別進捗 */}
+        <div className="bg-white rounded-2xl p-6 shadow-lg">
+          <h2 className="text-xl font-bold mb-4 text-primary">📈 カテゴリ別進捗</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {stats.categoryStats.map(({ category, completed, total, percentage }) => (
+              <div key={category} className="border rounded-lg p-4">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="font-medium capitalize">{category}</span>
+                  <span className="text-sm text-gray-600">{percentage}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${percentage}%` }}
+                  ></div>
+                </div>
+                <div className="text-xs text-gray-600 mt-1">
+                  {completed} / {total} 完了
+                </div>
+              </div>
+            ))}
           </div>
-          <div className="bg-black-50 p-4 rounded-xl text-center">
-            <div className="text-2xl font-bold text-blue-600">{stats.dailyTasksNeeded}</div>
-            <div className="text-sm text-secondary">1日必要タスク</div>
-          </div>
+        </div>
+
+        {/* 開発者情報 */}
+        <div className="text-center text-white/70 text-sm">
+          <p>TOEIC学習管理アプリ - Firebase + Next.js</p>
+          <p>ユーザーID: {user.uid}</p>
         </div>
       </div>
-
-      <div className="grid md:grid-cols-2 gap-5">
-        <div className="bg-white p-5 rounded-2xl shadow-lg">
-          <h2 className="text-xl font-bold mb-4 text-primary">📝 タスク管理</h2>
-          <TaskForm onAddTask={(taskData) => {
-            const newTask: Task = {
-              id: Date.now(),
-              ...taskData,
-              completed: false,
-              createdAt: new Date().toISOString(),
-            };
-            setUncompletedTasks([...uncompletedTasks, newTask]);
-            localStorage.setItem('toeicTasks', JSON.stringify([...uncompletedTasks, newTask]));
-          }} 
-          onAddBulkTasks={(tasksData) => {
-            const newTasks: Task[] = tasksData.map((taskData, index) => ({
-              id: Date.now() + index,
-              ...taskData,
-              completed: false,
-              createdAt: new Date().toISOString(),
-            }));
-            const updatedTasks = [...uncompletedTasks, ...newTasks];
-            setUncompletedTasks(updatedTasks);
-            localStorage.setItem('toeicTasks', JSON.stringify(updatedTasks));
-          }} />
-          <TaskList
-            tasks={uncompletedTasks}
-            onCompleteTask={handleCompleteTask}
-            onDeleteTask={handleDeleteTask}
-            onEditTask={handleEditTask}
-          />
-        </div>
-        <div className="bg-white p-5 rounded-2xl shadow-lg">
-          <h2 className="text-xl font-bold mb-4 text-primary">📊 進捗可視化</h2>
-          <Calendar 
-            tasks={[...uncompletedTasks, ...completedTasks]} 
-            currentDate={new Date()} 
-            goals={goals}
-          />
-        </div>
-      </div>
-    </main>
+    </div>
   );
 }

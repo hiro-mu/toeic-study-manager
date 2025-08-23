@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Task } from '@/types';
+import { Task, TaskCategory } from '@/types';
 
 interface TaskEditModalProps {
   isOpen: boolean;
@@ -9,7 +9,7 @@ interface TaskEditModalProps {
   onClose: () => void;
   onSave: (taskId: number, updatedTask: {
     title: string;
-    category: string;
+    category: TaskCategory;
     description: string;
     dueDate: string;
   }) => void;
@@ -34,7 +34,7 @@ export default function TaskEditModal({ isOpen, task, onClose, onSave }: TaskEdi
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!title.trim()) {
       setError('タイトルは必須です');
       return;
@@ -49,7 +49,7 @@ export default function TaskEditModal({ isOpen, task, onClose, onSave }: TaskEdi
 
     onSave(task.id, {
       title: title.trim(),
-      category,
+      category: category as TaskCategory,
       description: description.trim(),
       dueDate,
     });
@@ -61,17 +61,6 @@ export default function TaskEditModal({ isOpen, task, onClose, onSave }: TaskEdi
   const handleClose = () => {
     setError('');
     onClose();
-  };
-
-  const getCategoryName = (category: string) => {
-    const names: { [key: string]: string } = {
-      listening: 'リスニング',
-      reading: 'リーディング',
-      vocabulary: '単語',
-      grammar: '文法',
-      other: 'その他',
-    };
-    return names[category] || category;
   };
 
   if (!isOpen || !task) return null;

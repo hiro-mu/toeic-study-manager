@@ -2,22 +2,6 @@
 
 import { useState } from 'react';
 
-interface Task {
-  id: number;
-  title: string;
-  category: string;
-  dueDate: string;
-  description?: string;
-  completed: boolean;
-  createdAt: string;
-  completedAt?: string;
-  completionData?: {
-    time: number;
-    difficulty: string;
-    focus: string;
-  };
-}
-
 interface CompletionModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -132,4 +116,3 @@ function CompletionModal({ isOpen, onClose, onComplete }: CompletionModalProps) 
 }
 
 export { CompletionModal };
-export type { Task };

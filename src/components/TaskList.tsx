@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { CompletionModal, type Task } from './CompletionModal';
+import { CompletionModal } from './CompletionModal';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import TaskEditModal from './TaskEditModal';
+import type { Task, TaskCategory } from '@/types';
 
 interface TaskListProps {
   tasks: Task[];
@@ -11,7 +12,7 @@ interface TaskListProps {
   onDeleteTask: (taskId: number) => void;
   onEditTask: (taskId: number, updatedTask: {
     title: string;
-    category: string;
+    category: TaskCategory;
     description: string;
     dueDate: string;
   }) => void;
@@ -73,7 +74,10 @@ export default function TaskList({ tasks, onCompleteTask, onDeleteTask, onEditTa
     description: string;
     dueDate: string;
   }) => {
-    onEditTask(taskId, updatedTask);
+    onEditTask(taskId, {
+      ...updatedTask,
+      category: updatedTask.category as TaskCategory
+    });
     setShowEditModal(false);
     setTaskToEdit(null);
   };
@@ -118,7 +122,7 @@ export default function TaskList({ tasks, onCompleteTask, onDeleteTask, onEditTa
               }`}
           >
             <div className="flex justify-between items-center mb-2">
-              <h3 
+              <h3
                 className="font-bold text-primary cursor-pointer hover:text-blue-600 transition-colors"
                 onClick={() => handleEditClick(task)}
                 title="クリックして編集"
@@ -168,14 +172,14 @@ export default function TaskList({ tasks, onCompleteTask, onDeleteTask, onEditTa
         onClose={() => setShowCompletionModal(false)}
         onComplete={handleCompletionSubmit}
       />
-      
+
       <DeleteConfirmModal
         isOpen={showDeleteModal}
         taskTitle={taskToDelete?.title || ''}
         onConfirm={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
       />
-      
+
       <TaskEditModal
         isOpen={showEditModal}
         task={taskToEdit}
