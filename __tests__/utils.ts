@@ -9,7 +9,7 @@ export function renderWithProviders(ui: ReactElement) {
 
 // モックデータ
 export const mockTask: Task = {
-  id: 1,
+  id: '1',
   title: 'TOEIC Part 5の練習',
   category: 'reading',
   dueDate: '2025-08-13',

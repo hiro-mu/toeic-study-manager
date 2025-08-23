@@ -8,6 +8,7 @@ import type { Task, TaskCategory, Goal } from '@/types';
 import Calendar from '@/components/Calendar';
 import { useAuth } from '@/hooks/useAuth';
 import { FirestoreService } from '@/lib/dataService';
+import { calculateCategoryStats } from '@/utils/statistics';
 
 export default function Home() {
   const [uncompletedTasks, setUncompletedTasks] = useState<Task[]>([]);
@@ -21,18 +22,9 @@ export default function Home() {
     const totalTasks = uncompletedTasks.length + completedTasks.length;
     const completionRate = totalTasks > 0 ? Math.round((completedTasks.length / totalTasks) * 100) : 0;
 
-    const categories = ['reading', 'listening', 'grammar', 'vocabulary', 'mock-test', 'other'] as const;
-    const categoryStats = categories.map(category => {
-      const completed = completedTasks.filter(task => task.category === category).length;
-      const total = [...uncompletedTasks, ...completedTasks].filter(task => task.category === category).length;
-
-      return {
-        category,
-        completed,
-        total,
-        percentage: total > 0 ? Math.round((completed / total) * 100) : 0
-      };
-    });
+    // カテゴリ別統計をユーティリティ関数で計算
+    const allTasks = [...uncompletedTasks, ...completedTasks];
+    const categoryStats = calculateCategoryStats(allTasks);
 
     return { totalTasks, completionRate, categoryStats };
   };
