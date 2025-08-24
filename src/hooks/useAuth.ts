@@ -76,9 +76,9 @@ export function useAuth() {
       setError(null);
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       return userCredential;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Sign up failed:', error);
-      const errorCode = error?.code || 'unknown-error';
+      const errorCode = (error as { code?: string })?.code || 'unknown-error';
       const errorMessage = getErrorMessage(errorCode);
       setError(errorMessage);
       throw error;
@@ -94,9 +94,9 @@ export function useAuth() {
       setError(null);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       return userCredential;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Sign in failed:', error);
-      const errorCode = error?.code || 'unknown-error';
+      const errorCode = (error as { code?: string })?.code || 'unknown-error';
       const errorMessage = getErrorMessage(errorCode);
       setError(errorMessage);
       throw error;
@@ -111,9 +111,9 @@ export function useAuth() {
       setLoading(true);
       setError(null);
       await sendPasswordResetEmail(auth, email);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Password reset failed:', error);
-      const errorCode = error?.code || 'unknown-error';
+      const errorCode = (error as { code?: string })?.code || 'unknown-error';
       const errorMessage = getErrorMessage(errorCode);
       setError(errorMessage);
       throw error;

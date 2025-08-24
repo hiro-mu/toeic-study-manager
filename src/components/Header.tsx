@@ -14,20 +14,14 @@ interface HeaderProps {
 
 export default function Header({ completedTasks, totalTasks, completionRate, goals, onSaveGoals }: HeaderProps) {
   const { user, signOut } = useAuth();
-
-  // useRouterをtry-catchで囲んでテスト環境での問題を回避
-  let router;
-  try {
-    router = useRouter();
-  } catch (error) {
-    // テスト環境では無視
-    router = null;
-  }
+  const router = useRouter();
 
   const handleLogout = async () => {
-    await signOut();
-    if (router) {
+    try {
+      await signOut();
       router.push('/signin');
+    } catch (error) {
+      console.error('Logout failed:', error);
     }
   };
 
