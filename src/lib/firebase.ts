@@ -1,22 +1,24 @@
 // Firebase configuration and initialization
 import { initializeApp } from 'firebase/app';
-import { getAuth, connectAuthEmulator } from 'firebase/auth';
-import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
-import { enableMultiTabIndexedDbPersistence } from 'firebase/firestore';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
+import { connectFirestoreEmulator, enableMultiTabIndexedDbPersistence, getFirestore } from 'firebase/firestore';
 
-// Firebase config - 開発環境ではダミー値、本番環境では環境変数から読み込む
+// Firebase config - 開発環境でのエミュレーター使用時はダミー値、本番環境では環境変数から読み込む
+const useEmulator = process.env.NODE_ENV === 'development';
+
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "demo-key",
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "demo-project.firebaseapp.com",
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "demo-toeic-study-app",
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "demo-project.appspot.com",
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "123456789",
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:123456789:web:abcdef",
+  apiKey: useEmulator ? "demo-key" : (process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "demo-key"),
+  authDomain: useEmulator ? "demo-project.firebaseapp.com" : (process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "demo-project.firebaseapp.com"),
+  projectId: useEmulator ? "demo-toeic-study-app" : (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "demo-toeic-study-app"),
+  storageBucket: useEmulator ? "demo-project.appspot.com" : (process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "demo-project.appspot.com"),
+  messagingSenderId: useEmulator ? "123456789" : (process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "123456789"),
+  appId: useEmulator ? "1:123456789:web:abcdef" : (process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:123456789:web:abcdef"),
 };
 
 // Debug: Firebase設定を確認
 if (process.env.NODE_ENV === 'development') {
   console.log('🔧 Firebase Config Debug:', {
+    useEmulator,
     apiKey: firebaseConfig.apiKey ? `${firebaseConfig.apiKey.substring(0, 10)}...` : 'Not set',
     authDomain: firebaseConfig.authDomain,
     projectId: firebaseConfig.projectId,
@@ -35,8 +37,8 @@ export const auth = getAuth(app);
 // Firestore
 export const db = getFirestore(app);
 
-// Development environment setup - 一時的にエミュレーター接続を無効化
-if (false && process.env.NODE_ENV === 'development') {
+// Development environment setup - エミュレーター接続を有効化
+if (useEmulator) {
   // Emulator接続 (一度だけ実行)
   const globalAny = globalThis as unknown as { _firestoreEmulatorConnected?: boolean };
   if (typeof window !== 'undefined' && !globalAny._firestoreEmulatorConnected) {
@@ -44,7 +46,7 @@ if (false && process.env.NODE_ENV === 'development') {
       connectAuthEmulator(auth, 'http://localhost:9098', { disableWarnings: true });
       connectFirestoreEmulator(db, 'localhost', 8081);
       globalAny._firestoreEmulatorConnected = true;
-      console.log('🔧 Firebase Emulator connected');
+      console.log('🔧 Firebase Emulator connected successfully');
     } catch (error) {
       console.log('Emulator connection failed or already connected:', error);
     }
