@@ -107,7 +107,7 @@ export default function AuthForm({ mode, onSuccess }: AuthFormProps) {
               }
             }}
             required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
             placeholder="your@email.com"
             disabled={isSubmitting}
           />
@@ -130,7 +130,7 @@ export default function AuthForm({ mode, onSuccess }: AuthFormProps) {
             }}
             required
             minLength={6}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
             placeholder="6文字以上のパスワード"
             disabled={isSubmitting}
           />
@@ -154,7 +154,7 @@ export default function AuthForm({ mode, onSuccess }: AuthFormProps) {
               }}
               required
               minLength={6}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
               placeholder="パスワードを再入力"
               disabled={isSubmitting}
             />
