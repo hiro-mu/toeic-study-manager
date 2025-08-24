@@ -8,10 +8,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { FirestoreService } from '@/lib/dataService';
 import type { Goal, Task, TaskCategory } from '@/types';
 import { calculateCategoryStats } from '@/utils/statistics';
-import { useEffect, useState } from 'react';
-
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
   const [uncompletedTasks, setUncompletedTasks] = useState<Task[]>([]);
@@ -64,6 +63,49 @@ export default function Home() {
     loadUserData();
   }, [user]);
 
+  // ローディング中の表示
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
+        <div className="bg-white rounded-2xl p-8 shadow-lg text-center max-w-md">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-secondary">認証状態を確認中...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 未認証時の表示（リダイレクト前の一時表示）
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
+        <div className="bg-white rounded-2xl p-8 shadow-lg text-center max-w-md">
+          <h2 className="text-2xl font-bold text-primary mb-4">🔐 認証が必要です</h2>
+          {authError && (
+            <p className="text-red-600 mb-4">エラー: {authError}</p>
+          )}
+          <p className="text-secondary mb-6">
+            TOEIC学習管理アプリを使用するには認証が必要です。
+          </p>
+          <div className="space-y-3">
+            <Link
+              href="/signin"
+              className="block bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+            >
+              ログイン
+            </Link>
+            <Link
+              href="/signup"
+              className="block bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+            >
+              新規登録
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // タスク操作ハンドラー
   const handleAddTask = async (taskData: {
     title: string;
@@ -115,7 +157,7 @@ export default function Home() {
     try {
       await FirestoreService.completeTask(user.uid, taskId, completionData);
 
-      // タスクリストを更新
+      // リアルタイム更新のため、両方のリストを再読み込み
       const [tasks, completedTasksData] = await Promise.all([
         FirestoreService.getTasks(user.uid),
         FirestoreService.getCompletedTasks(user.uid)
@@ -134,20 +176,15 @@ export default function Home() {
     try {
       await FirestoreService.deleteTask(user.uid, taskId);
 
-      // タスクリストを更新
-      const [tasks, completedTasksData] = await Promise.all([
-        FirestoreService.getTasks(user.uid),
-        FirestoreService.getCompletedTasks(user.uid)
-      ]);
-
+      // リアルタイム更新のため、再読み込み
+      const tasks = await FirestoreService.getTasks(user.uid);
       setUncompletedTasks(tasks);
-      setCompletedTasks(completedTasksData);
     } catch (error) {
       console.error('Failed to delete task:', error);
     }
   };
 
-  const handleEditTask = async (taskId: string, updatedTask: {
+  const handleEditTask = async (taskId: string, taskData: {
     title: string;
     category: TaskCategory;
     description: string;
@@ -156,59 +193,15 @@ export default function Home() {
     if (!user) return;
 
     try {
-      await FirestoreService.updateTask(user.uid, taskId, updatedTask);
+      await FirestoreService.updateTask(user.uid, taskId, taskData);
 
-      // タスクリストを更新
+      // リアルタイム更新のため、再読み込み
       const tasks = await FirestoreService.getTasks(user.uid);
       setUncompletedTasks(tasks);
     } catch (error) {
       console.error('Failed to edit task:', error);
     }
   };
-
-  // 認証が必要な場合のローディング画面
-  // ローディング中の表示
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
-        <div className="bg-white rounded-2xl p-8 shadow-lg text-center max-w-md">
-          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-secondary">認証状態を確認中...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // 未認証時の表示（リダイレクト前の一時表示）
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
-        <div className="bg-white rounded-2xl p-8 shadow-lg text-center max-w-md">
-          <h2 className="text-2xl font-bold text-primary mb-4">🔐 認証が必要です</h2>
-          {authError && (
-            <p className="text-red-600 mb-4">エラー: {authError}</p>
-          )}
-          <p className="text-secondary mb-6">
-            TOEIC学習管理アプリを使用するには認証が必要です。
-          </p>
-          <div className="space-y-3">
-            <Link
-              href="/signin"
-              className="block bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-            >
-              ログイン
-            </Link>
-            <Link
-              href="/signup"
-              className="block bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-            >
-              新規登録
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   const stats = calculateStats();
 
@@ -250,21 +243,41 @@ export default function Home() {
           </div>
 
           <div className="bg-white rounded-2xl p-6 shadow-lg">
-            <h3 className="text-lg font-bold text-primary mb-2">📅 残りタスク</h3>
-            <div className="text-3xl font-bold text-orange-500">{uncompletedTasks.length}</div>
-            <div className="text-sm text-secondary">今日: {
-              uncompletedTasks.filter(task => task.dueDate === new Date().toISOString().split('T')[0]).length
-            }</div>
+            <h3 className="text-lg font-bold text-primary mb-2">📈 カテゴリ別進捗</h3>
+            <div className="space-y-1">
+              {Object.entries(stats.categoryStats).map(([category, { completed, total }]) => (
+                <div key={category} className="flex justify-between items-center">
+                  <span className="text-sm text-secondary capitalize">{category}</span>
+                  <div className="text-xs text-secondary">
+                    {completed} / {total} 完了
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* メインコンテンツ */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* 進捗可視化セクション - モバイルで優先表示 */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg lg:order-2">
-            <h2 className="text-xl font-bold mb-4 text-primary">📊進捗可視化</h2>
+        {/* メインコンテンツエリア */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* タスクフォーム */}
+          <div className="lg:col-span-1">
+            <TaskForm onAddTask={handleAddTask} onAddBulkTasks={handleAddBulkTasks} />
+          </div>
+
+          {/* タスクリスト */}
+          <div className="lg:col-span-1">
+            <TaskList
+              tasks={uncompletedTasks}
+              onCompleteTask={handleCompleteTask}
+              onDeleteTask={handleDeleteTask}
+              onEditTask={handleEditTask}
+            />
+          </div>
+
+          {/* カレンダー */}
+          <div className="lg:col-span-1">
             <Calendar
-              tasks={[...uncompletedTasks, ...completedTasks]}
+              tasks={uncompletedTasks}
               currentDate={new Date()}
               goals={goals}
               onCompleteTask={handleCompleteTask}
@@ -272,53 +285,12 @@ export default function Home() {
               onDeleteTask={handleDeleteTask}
             />
           </div>
-
-          {/* タスク管理セクション */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg lg:order-1">
-            <h2 className="text-xl font-bold mb-4 text-primary">📝タスク管理</h2>
-            <TaskForm
-              onAddTask={handleAddTask}
-              onAddBulkTasks={handleAddBulkTasks}
-            />
-            <div className="mt-6">
-              <TaskList
-                tasks={uncompletedTasks}
-                onCompleteTask={handleCompleteTask}
-                onDeleteTask={handleDeleteTask}
-                onEditTask={handleEditTask}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* カテゴリ別進捗 */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg">
-          <h2 className="text-xl font-bold mb-4 text-primary">📈 カテゴリ別進捗</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {stats.categoryStats.map(({ category, completed, total, percentage }) => (
-              <div key={category} className="border rounded-lg p-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-medium capitalize text-primary">{category}</span>
-                  <span className="text-sm text-secondary">{percentage}%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div
-                    className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${percentage}%` }}
-                  ></div>
-                </div>
-                <div className="text-xs text-secondary mt-1">
-                  {completed} / {total} 完了
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* 開発者情報 */}
         <div className="text-center text-white/70 text-sm">
           <p>TOEIC学習管理アプリ - Firebase + Next.js</p>
-          <p>ユーザーID: {user?.uid}</p>
+          <p>ユーザーID: {user.uid}</p>
         </div>
       </div>
     </div>

@@ -1,6 +1,8 @@
 'use client';
 
+import { useAuth } from '@/hooks/useAuth';
 import type { Goal } from '@/types';
+import { useRouter } from 'next/navigation';
 
 interface HeaderProps {
   completedTasks: number;
@@ -11,6 +13,24 @@ interface HeaderProps {
 }
 
 export default function Header({ completedTasks, totalTasks, completionRate, goals, onSaveGoals }: HeaderProps) {
+  const { user, signOut } = useAuth();
+
+  // useRouterをtry-catchで囲んでテスト環境での問題を回避
+  let router;
+  try {
+    router = useRouter();
+  } catch (error) {
+    // テスト環境では無視
+    router = null;
+  }
+
+  const handleLogout = async () => {
+    await signOut();
+    if (router) {
+      router.push('/signin');
+    }
+  };
+
   const handleTargetScoreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newGoals: Goal = {
       targetScore: Number(e.target.value),
@@ -29,7 +49,27 @@ export default function Header({ completedTasks, totalTasks, completionRate, goa
 
   return (
     <div className="bg-white p-5 rounded-2xl shadow-lg mb-5">
-      <h1 className="text-3xl text-center text-primary mb-5">📚 TOEIC Study Manager</h1>
+      {/* ヘッダータイトルとユーザー情報 */}
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-5">
+        <h1 className="text-3xl text-center text-primary mb-3 sm:mb-0">📚 TOEIC Study Manager</h1>
+
+        {/* ユーザー情報とログアウト */}
+        {user && (
+          <div className="flex flex-col sm:flex-row items-center gap-3 bg-gray-50 px-4 py-2 rounded-lg">
+            <div className="flex items-center gap-2 text-gray-700">
+              <span className="text-lg">👤</span>
+              <span className="text-sm font-medium">{user.email}</span>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors shadow-sm hover:shadow-md"
+              title="ログアウト"
+            >
+              📤 ログアウト
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* 進捗表示 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">

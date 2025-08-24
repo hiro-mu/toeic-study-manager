@@ -52,6 +52,8 @@ export type TaskCategory = 'reading' | 'listening' | 'grammar' | 'vocabulary' | 
 // 認証関連の型
 export interface AuthUser {
   uid: string;
-  email?: string;
+  email: string | null;
   isAnonymous: boolean;
+  emailVerified?: boolean;
+  displayName?: string | null;
 }
