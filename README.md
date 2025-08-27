@@ -1,17 +1,46 @@
-# TOEIC Study Manager
+# Toeic Study Manager
 
-## データ管理
+## Overview
+This application is designed to help users manage their TOEIC study tasks effectively. It incorporates features that allow for task management, progress tracking, and resource allocation.
 
-このアプリケーションでは、データ管理にFirebase Firestoreを使用しています。Firebase Firestoreは、リアルタイムデータベースであり、スケーラブルなデータ保存を提供します。これにより、ユーザーのデータは安全に保存され、必要に応じて迅速にアクセスできます。
+## Technologies Used
+- **Next.js**: A React framework for building server-side rendered applications.
+- **TypeScript**: A superset of JavaScript that compiles to plain JavaScript and offers static typing.
+- **Firebase**: A platform for building mobile and web applications, providing services like authentication and a real-time database.
+- **Tailwind CSS**: A utility-first CSS framework for creating custom designs without leaving your HTML.
+- **Jest**: A delightful JavaScript testing framework with a focus on simplicity.
 
-## アーキテクチャ詳細
+## Features
+- **Task Management**: Users can create, update, and delete tasks related to TOEIC preparation.
+- **Progress Tracking**: Visual indicators of progress for each task.
+- **Resource Allocation**: Users can allocate resources such as study materials or time to specific tasks.
 
-アプリケーションのアーキテクチャは、Firebase Firestoreを中心に構築されています。Firestoreは、データの保存と取得を効率的に行うための強力なツールです。これにより、アプリのパフォーマンスが向上し、ユーザー体験が向上します。
+## Getting Started
+To run the application locally, follow these steps:
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/hiro-mu/toeic-study-manager.git
+   cd toeic-study-manager
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Set up Firebase configuration in the environment variables.
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+5. Open your browser and navigate to `http://localhost:3000`.
 
-## データ保存
+## Testing
+To run tests, use the following command:
+```bash
+npm run test
+```
 
-データはすべてFirebase Firestoreに保存されます。このシステムは、データの整合性を保ちながら、アクセスの迅速さを実現します。ユーザーは、アプリケーションを通じてデータを簡単に管理できます。
+## Contributing
+Contributions are welcome! Please submit a pull request or open an issue for any suggestions or improvements.
 
-## 更新日
-
-最終更新日: 2025年8月27日
+## License
+This project is licensed under the MIT License. See the LICENSE file for details.
