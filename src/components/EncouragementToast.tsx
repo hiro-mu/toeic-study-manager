@@ -1,7 +1,7 @@
 'use client';
 
 import type { EncouragementMessage } from '@/types';
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface EncouragementToastProps {
   message: EncouragementMessage | null;
@@ -33,7 +33,7 @@ export default function EncouragementToast({
       // フェードイン開始
       setIsVisible(true);
       setIsAnimating(true);
-      
+
       // 自動非表示タイマー
       const timer = setTimeout(() => {
         handleClose();
@@ -70,8 +70,8 @@ export default function EncouragementToast({
         className={`
           max-w-sm bg-white border-l-4 border-blue-500 rounded-lg shadow-lg
           transform transition-all duration-300 ease-in-out
-          ${isAnimating 
-            ? 'translate-x-0 opacity-100 scale-100' 
+          ${isAnimating
+            ? 'translate-x-0 opacity-100 scale-100'
             : 'translate-x-full opacity-0 scale-95'
           }
         `}
@@ -92,17 +92,17 @@ export default function EncouragementToast({
               className="text-gray-400 hover:text-gray-600 transition-colors"
               aria-label="メッセージを閉じる"
             >
-              <svg 
-                className="w-4 h-4" 
-                fill="none" 
-                stroke="currentColor" 
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M6 18L18 6M6 6l12 12" 
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
             </button>
@@ -154,8 +154,8 @@ export function EncouragementToastContainer({
           key={message.id}
           style={{
             // 複数メッセージがある場合、縦にずらして表示
-            transform: position.includes('top') 
-              ? `translateY(${index * 80}px)` 
+            transform: position.includes('top')
+              ? `translateY(${index * 80}px)`
               : `translateY(${-index * 80}px)`
           }}
         >

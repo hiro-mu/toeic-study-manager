@@ -1,7 +1,6 @@
-import { 
-  getEncouragementMessage, 
-  getCurrentContext, 
-  MessageHistoryManager 
+import {
+  getEncouragementMessage,
+  MessageHistoryManager
 } from '@/utils/encouragementMessages';
 
 describe('Encouragement Messages - エッジケース & セキュリティテスト', () => {
@@ -173,7 +172,7 @@ describe('Encouragement Messages - エッジケース & セキュリティテス
       }
 
       const startTime = performance.now();
-      
+
       // メッセージ取得を複数回実行
       for (let i = 0; i < 10; i++) {
         getEncouragementMessage({
@@ -222,11 +221,11 @@ describe('Encouragement Messages - エッジケース & セキュリティテス
 
       for (let i = 0; i < 10; i++) {
         const message = getEncouragementMessage(params);
-        
+
         // メッセージが空でなく、適切な長さであることを確認
         expect(message.text.length).toBeGreaterThan(5);
         expect(message.text.length).toBeLessThan(200);
-        
+
         // 絵文字が存在することを確認
         expect(message.emoji.length).toBeGreaterThan(0);
         expect(message.emoji.length).toBeLessThan(10);
@@ -235,7 +234,7 @@ describe('Encouragement Messages - エッジケース & セキュリティテス
 
     it('メッセージに不適切な内容が含まれていない', () => {
       const inappropriateWords = ['バカ', 'アホ', '死ね', '諦めろ', 'だめ'];
-      
+
       const params = {
         completionRate: 25,
         totalTasks: 8,
@@ -245,7 +244,7 @@ describe('Encouragement Messages - エッジケース & セキュリティテス
 
       for (let i = 0; i < 20; i++) {
         const message = getEncouragementMessage(params);
-        
+
         inappropriateWords.forEach(word => {
           expect(message.text).not.toContain(word);
         });

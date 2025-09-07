@@ -67,7 +67,7 @@ export interface EncouragementMessage {
   context: MessageContext[];
 }
 
-export type EncouragementCategory = 
+export type EncouragementCategory =
   | 'greeting'        // 挨拶・開始時
   | 'progress'        // 進捗達成時
   | 'motivation'      // モチベーション向上
@@ -76,7 +76,7 @@ export type EncouragementCategory =
   | 'daily'          // 日常的な励まし
   | 'challenge';     // 挑戦・難しい時
 
-export type MessageContext = 
+export type MessageContext =
   | 'morning'         // 朝
   | 'afternoon'       // 午後
   | 'evening'         // 夜

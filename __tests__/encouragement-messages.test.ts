@@ -1,12 +1,12 @@
-import { 
-  getEncouragementMessage, 
-  getCurrentContext, 
-  getTimeOfDay, 
-  getRandomEncouragementMessage, 
-  MessageHistoryManager,
-  ENCOURAGEMENT_MESSAGES 
-} from '@/utils/encouragementMessages';
 import type { MessageContext } from '@/types';
+import {
+  ENCOURAGEMENT_MESSAGES,
+  getCurrentContext,
+  getEncouragementMessage,
+  getRandomEncouragementMessage,
+  getTimeOfDay,
+  MessageHistoryManager
+} from '@/utils/encouragementMessages';
 
 // LocalStorage のモック
 const localStorageMock: Storage = {
@@ -131,11 +131,11 @@ describe('EncouragementMessages', () => {
     it('特定のコンテキストに適したメッセージを取得できる', () => {
       const contexts: MessageContext[] = ['morning', 'high_progress'];
       const message = getRandomEncouragementMessage(contexts);
-      
+
       expect(message).toBeDefined();
       // メッセージのコンテキストが空か、指定されたコンテキストのいずれかを含む
       expect(
-        message.context.length === 0 || 
+        message.context.length === 0 ||
         message.context.some(ctx => contexts.includes(ctx))
       ).toBe(true);
     });
@@ -143,7 +143,7 @@ describe('EncouragementMessages', () => {
     it('除外リストに含まれるメッセージは選択されない', () => {
       const excludeIds = ENCOURAGEMENT_MESSAGES.slice(0, 5).map(m => m.id);
       const message = getRandomEncouragementMessage([], excludeIds);
-      
+
       expect(message).toBeDefined();
       expect(excludeIds).not.toContain(message.id);
     });
@@ -153,7 +153,7 @@ describe('EncouragementMessages', () => {
     it('履歴を正しく保存・取得できる', () => {
       MessageHistoryManager.addToHistory('test_message_1');
       MessageHistoryManager.addToHistory('test_message_2');
-      
+
       const history = MessageHistoryManager.getRecentIds();
       expect(history).toEqual(['test_message_2', 'test_message_1']);
     });
@@ -162,7 +162,7 @@ describe('EncouragementMessages', () => {
       MessageHistoryManager.addToHistory('test_message_1');
       MessageHistoryManager.addToHistory('test_message_2');
       MessageHistoryManager.addToHistory('test_message_1'); // 重複
-      
+
       const history = MessageHistoryManager.getRecentIds();
       expect(history).toEqual(['test_message_1', 'test_message_2']);
     });
@@ -172,7 +172,7 @@ describe('EncouragementMessages', () => {
       for (let i = 1; i <= 15; i++) {
         MessageHistoryManager.addToHistory(`test_message_${i}`);
       }
-      
+
       const history = MessageHistoryManager.getRecentIds();
       expect(history.length).toBeLessThanOrEqual(10); // MAX_HISTORY = 10
       expect(history[0]).toBe('test_message_15'); // 最新が先頭
@@ -181,7 +181,7 @@ describe('EncouragementMessages', () => {
     it('履歴をクリアできる', () => {
       MessageHistoryManager.addToHistory('test_message_1');
       MessageHistoryManager.clearHistory();
-      
+
       const history = MessageHistoryManager.getRecentIds();
       expect(history).toEqual([]);
     });
@@ -200,7 +200,7 @@ describe('EncouragementMessages', () => {
       expect(message.id).toBeDefined();
       expect(message.text).toBeDefined();
       expect(message.emoji).toBeDefined();
-      
+
       // メッセージが履歴に追加されていることを確認
       const history = MessageHistoryManager.getRecentIds();
       expect(history).toContain(message.id);
@@ -226,7 +226,7 @@ describe('EncouragementMessages', () => {
 
       expect(highProgressMessage).toBeDefined();
       expect(lowProgressMessage).toBeDefined();
-      
+
       // 異なるメッセージが選択される可能性が高い（完全に保証はできないがランダム性のテスト）
       // 少なくとも両方とも有効なメッセージであることを確認
       expect(ENCOURAGEMENT_MESSAGES.some(m => m.id === highProgressMessage.id)).toBe(true);
@@ -256,7 +256,7 @@ describe('EncouragementMessages', () => {
 
     it('各カテゴリに適切なメッセージが含まれている', () => {
       const categories = ['greeting', 'progress', 'motivation', 'completion', 'goal', 'daily', 'challenge'];
-      
+
       categories.forEach(category => {
         const messagesInCategory = ENCOURAGEMENT_MESSAGES.filter(m => m.category === category);
         expect(messagesInCategory.length).toBeGreaterThan(0);

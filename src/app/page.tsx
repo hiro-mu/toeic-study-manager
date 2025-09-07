@@ -8,8 +8,8 @@ import TaskList from '@/components/TaskList';
 import { useAuth } from '@/hooks/useAuth';
 import { FirestoreService } from '@/lib/dataService';
 import type { Goal, Task, TaskCategory } from '@/types';
-import { calculateCategoryStats } from '@/utils/statistics';
 import { getEncouragementMessage } from '@/utils/encouragementMessages';
+import { calculateCategoryStats } from '@/utils/statistics';
 import { useEffect, useState } from 'react';
 
 import Link from 'next/link';
@@ -22,7 +22,7 @@ export default function Home() {
 
   const { user, loading, error: authError } = useAuth();
   const router = useRouter();
-  
+
   // 励ましメッセージ機能
   const { currentMessage, showMessage, hideMessage } = useEncouragementToast();
 
@@ -137,7 +137,7 @@ export default function Home() {
         completedTasks: completedTasksData.length,
         hasGoal: !!goals?.targetScore
       });
-      
+
       showMessage(encouragementMessage);
     } catch (error) {
       console.error('Failed to complete task:', error);

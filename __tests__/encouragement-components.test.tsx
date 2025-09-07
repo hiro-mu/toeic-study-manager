@@ -1,7 +1,7 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import EncouragementToast, { useEncouragementToast } from '@/components/EncouragementToast';
 import EncouragementBanner from '@/components/EncouragementBanner';
+import EncouragementToast, { useEncouragementToast } from '@/components/EncouragementToast';
 import type { EncouragementMessage } from '@/types';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 // テスト用のメッセージ
 const mockMessage: EncouragementMessage = {
@@ -18,13 +18,13 @@ function TestHookComponent() {
 
   return (
     <div>
-      <button 
+      <button
         onClick={() => showMessage(mockMessage)}
         data-testid="show-message"
       >
         Show Message
       </button>
-      <button 
+      <button
         onClick={hideMessage}
         data-testid="hide-message"
       >
@@ -51,9 +51,9 @@ describe('EncouragementToast', () => {
   it('メッセージが表示される', () => {
     const onClose = jest.fn();
     render(
-      <EncouragementToast 
-        message={mockMessage} 
-        onClose={onClose} 
+      <EncouragementToast
+        message={mockMessage}
+        onClose={onClose}
       />
     );
 
@@ -65,9 +65,9 @@ describe('EncouragementToast', () => {
   it('メッセージがnullの場合、何も表示されない', () => {
     const onClose = jest.fn();
     const { container } = render(
-      <EncouragementToast 
-        message={null} 
-        onClose={onClose} 
+      <EncouragementToast
+        message={null}
+        onClose={onClose}
       />
     );
 
@@ -77,9 +77,9 @@ describe('EncouragementToast', () => {
   it('閉じるボタンをクリックするとonCloseが呼ばれる', async () => {
     const onClose = jest.fn();
     render(
-      <EncouragementToast 
-        message={mockMessage} 
-        onClose={onClose} 
+      <EncouragementToast
+        message={mockMessage}
+        onClose={onClose}
       />
     );
 
@@ -97,9 +97,9 @@ describe('EncouragementToast', () => {
   it('自動非表示タイマーが動作する', async () => {
     const onClose = jest.fn();
     render(
-      <EncouragementToast 
-        message={mockMessage} 
-        onClose={onClose} 
+      <EncouragementToast
+        message={mockMessage}
+        onClose={onClose}
         autoHideDuration={3000}
       />
     );
@@ -118,9 +118,9 @@ describe('EncouragementToast', () => {
   it('異なるポジションでレンダリングされる', () => {
     const onClose = jest.fn();
     const { rerender } = render(
-      <EncouragementToast 
-        message={mockMessage} 
-        onClose={onClose} 
+      <EncouragementToast
+        message={mockMessage}
+        onClose={onClose}
         position="top-center"
       />
     );
@@ -131,9 +131,9 @@ describe('EncouragementToast', () => {
     expect(container).toHaveClass('left-1/2');
 
     rerender(
-      <EncouragementToast 
-        message={mockMessage} 
-        onClose={onClose} 
+      <EncouragementToast
+        message={mockMessage}
+        onClose={onClose}
         position="bottom-right"
       />
     );
@@ -187,7 +187,7 @@ describe('EncouragementBanner', () => {
     // バナー要素が表示されることを確認
     expect(screen.getByRole('img', { name: 'encouragement' })).toBeInTheDocument();
     expect(screen.getByLabelText('メッセージを閉じる')).toBeInTheDocument();
-    
+
     // 何らかの日本語テキストが含まれることを確認
     const banner = screen.getByRole('img', { name: 'encouragement' }).closest('div');
     expect(banner).toBeInTheDocument();

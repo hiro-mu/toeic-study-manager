@@ -14,7 +14,7 @@ export const ENCOURAGEMENT_MESSAGES: EncouragementMessage[] = [
     context: ['morning']
   },
   {
-    id: 'greeting_002', 
+    id: 'greeting_002',
     text: 'お疲れ様です！午後の学習タイムですね。集中していきましょう！',
     emoji: '☀️',
     category: 'greeting',
@@ -208,7 +208,7 @@ export function getCurrentContext(options: {
  */
 export function getTimeOfDay(): 'morning' | 'afternoon' | 'evening' {
   const hour = new Date().getHours();
-  
+
   if (hour >= 6 && hour < 12) {
     return 'morning';
   } else if (hour >= 12 && hour < 18) {
@@ -291,7 +291,7 @@ export class MessageHistoryManager {
       const history = this.getRecentIds();
       const updatedHistory = [messageId, ...history.filter(id => id !== messageId)]
         .slice(0, this.MAX_HISTORY);
-      
+
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(updatedHistory));
     } catch (error) {
       console.warn('Failed to update message history:', error);
@@ -319,9 +319,9 @@ export function getEncouragementMessage(options: {
   const timeOfDay = getTimeOfDay();
   const contexts = getCurrentContext({ ...options, timeOfDay });
   const recentIds = MessageHistoryManager.getRecentIds();
-  
+
   const message = getRandomEncouragementMessage(contexts, recentIds);
   MessageHistoryManager.addToHistory(message.id);
-  
+
   return message;
 }
