@@ -57,3 +57,31 @@ export interface AuthUser {
   emailVerified?: boolean;
   displayName?: string | null;
 }
+
+// 励ましメッセージ関連の型
+export interface EncouragementMessage {
+  id: string;
+  text: string;
+  emoji: string;
+  category: EncouragementCategory;
+  context: MessageContext[];
+}
+
+export type EncouragementCategory = 
+  | 'greeting'        // 挨拶・開始時
+  | 'progress'        // 進捗達成時
+  | 'motivation'      // モチベーション向上
+  | 'completion'      // タスク完了時
+  | 'goal'           // 目標設定時
+  | 'daily'          // 日常的な励まし
+  | 'challenge';     // 挑戦・難しい時
+
+export type MessageContext = 
+  | 'morning'         // 朝
+  | 'afternoon'       // 午後
+  | 'evening'         // 夜
+  | 'high_progress'   // 高い進捗率
+  | 'low_progress'    // 低い進捗率
+  | 'first_task'      // 初回タスク
+  | 'streak'          // 連続学習
+  | 'near_goal';      // 目標に近い

@@ -1,6 +1,7 @@
 'use client';
 
 import Calendar from '@/components/Calendar';
+import EncouragementToast, { useEncouragementToast } from '@/components/EncouragementToast';
 import Header from '@/components/Header';
 import TaskForm from '@/components/TaskForm';
 import TaskList from '@/components/TaskList';
@@ -8,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { FirestoreService } from '@/lib/dataService';
 import type { Goal, Task, TaskCategory } from '@/types';
 import { calculateCategoryStats } from '@/utils/statistics';
+import { getEncouragementMessage } from '@/utils/encouragementMessages';
 import { useEffect, useState } from 'react';
 
 import Link from 'next/link';
@@ -20,15 +22,11 @@ export default function Home() {
 
   const { user, loading, error: authError } = useAuth();
   const router = useRouter();
+  
+  // 励ましメッセージ機能
+  const { currentMessage, showMessage, hideMessage } = useEncouragementToast();
 
-  // 未認証ユーザーのリダイレクト
-  useEffect(() => {
-    if (!loading && !user) {
-      router.replace('/signin');
-    }
-  }, [user, loading, router]);
-
-  // 統計計算
+  // 統計計算（他の関数からも使用するため、先頭で定義）
   const calculateStats = () => {
     const totalTasks = uncompletedTasks.length + completedTasks.length;
     const completionRate = totalTasks > 0 ? Math.round((completedTasks.length / totalTasks) * 100) : 0;
@@ -39,6 +37,13 @@ export default function Home() {
 
     return { totalTasks, completionRate, categoryStats };
   };
+
+  // 未認証ユーザーのリダイレクト
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace('/signin');
+    }
+  }, [user, loading, router]);
 
   // Firebase認証後のデータ読み込み
   useEffect(() => {
@@ -123,6 +128,17 @@ export default function Home() {
 
       setUncompletedTasks(tasks);
       setCompletedTasks(completedTasksData);
+
+      // タスク完了時の励ましメッセージを表示
+      const stats = calculateStats();
+      const encouragementMessage = getEncouragementMessage({
+        completionRate: stats.completionRate,
+        totalTasks: stats.totalTasks,
+        completedTasks: completedTasksData.length,
+        hasGoal: !!goals?.targetScore
+      });
+      
+      showMessage(encouragementMessage);
     } catch (error) {
       console.error('Failed to complete task:', error);
     }
@@ -321,6 +337,14 @@ export default function Home() {
           <p>ユーザーID: {user?.uid}</p>
         </div>
       </div>
+
+      {/* 励ましメッセージトースト */}
+      <EncouragementToast
+        message={currentMessage}
+        onClose={hideMessage}
+        position="top-right"
+        autoHideDuration={5000}
+      />
     </div>
   );
 }

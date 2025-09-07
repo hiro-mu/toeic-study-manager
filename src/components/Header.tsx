@@ -1,5 +1,6 @@
 'use client';
 
+import EncouragementBanner from '@/components/EncouragementBanner';
 import { useAuth } from '@/hooks/useAuth';
 import type { Goal } from '@/types';
 import { useRouter } from 'next/navigation';
@@ -112,6 +113,14 @@ export default function Header({ completedTasks, totalTasks, completionRate, goa
           />
         </div>
       </div>
+
+      {/* 励ましメッセージバナー */}
+      <EncouragementBanner
+        completionRate={completionRate}
+        totalTasks={totalTasks}
+        completedTasks={completedTasks}
+        hasGoal={!!goals?.targetScore}
+      />
     </div>
   );
 }
