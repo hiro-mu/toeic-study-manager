@@ -8,10 +8,47 @@
 [![Firebase](https://img.shields.io/badge/Firebase-12.1.0-ffca28?logo=firebase)](https://firebase.google.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-v4-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
 [![Test Coverage](https://img.shields.io/badge/Test%20Coverage-98%25-green)](https://jestjs.io/)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+
+## 📑  目次
+
+- [✨ プロジェクト概要](#-プロジェクト概要)
+- [🚀 Quick Start](#-quick-start)
+- [✨ 主要な特徴](#-主要な特徴)
+- [🛠️ 技術スタック](#️-技術スタック)
+- [🚀 セットアップと実行](#-セットアップと実行)
+- [📋 利用可能なスクリプト](#-利用可能なスクリプト)
+- [🎯 主要機能詳細](#-主要機能詳細)
+- [🏗️ アーキテクチャ詳細](#️-アーキテクチャ詳細)
+- [🧪 テスト](#-テスト)
+- [🔧 開発ガイドライン](#-開発ガイドライン)
+- [🚀 本番環境デプロイ](#-本番環境デプロイ)
+- [🤝 コントリビューション](#-コントリビューション)
+- [❓ トラブルシューティング](#-トラブルシューティング)
+- [📝 ライセンス](#-ライセンス)
 
 ## ✨ プロジェクト概要
 
 **TOEIC Study Manager** は、TOEIC学習を体系的に管理するためのモダンなWebアプリケーションです。タスク管理、進捗追跡、統計分析、カレンダー表示など、学習効率を最大化する包括的な機能を提供します。
+
+## 🚀 Quick Start
+
+**5分で始めよう！**
+
+```bash
+# 1. クローンとインストール
+git clone https://github.com/hiro-mu/toeic-study-manager.git
+cd toeic-study-manager
+npm install
+
+# 2. ローカル開発環境を起動（Firebaseエミュレーター使用）
+npm run dev:emulator
+
+# 3. ブラウザで http://localhost:3000 を開く
+# テストアカウント: test@example.com / password123
+
+# 詳細なセットアップについては「セットアップと実行」セクションを参照してください
+```
 
 ### 🎨 主要な特徴
 
@@ -79,6 +116,14 @@ NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
 NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 ```
+
+**Firebase設定値の取得方法:**
+1. [Firebase Console](https://console.firebase.google.com/)にアクセス
+2. プロジェクトを選択
+3. 左側メニューから「プロジェクト設定」 → 「アプリ」を選択
+4. Webアプリを登録し、設定値をコピー
+
+> 📖 詳細なFirebase設定については、[Firebase Setup Guide](docs/firebase-setup-guide.md) を参照してください。
 
 ### 4. 開発サーバー起動
 
@@ -240,6 +285,39 @@ Firestore → DataService → State Management → Component Updates
 - **包括的な型定義**: Task, Goal, AuthUser, CategoryStats等
 - **Firebase型変換**: FirestoreとReact間の型安全な変換
 
+### Firestoreデータモデル
+
+```
+users/
+├── {userId}/
+│   ├── email: string
+│   ├── displayName: string
+│   ├── createdAt: timestamp
+│   └── settings: object
+
+tasks/
+├── {taskId}/
+│   ├── userId: string
+│   ├── title: string
+│   ├── category: 'reading' | 'listening' | 'grammar' | 'vocabulary' | 'mock-test' | 'other'
+│   ├── description: string
+│   ├── completed: boolean
+│   ├── dueDate: date
+│   ├── studyTime: number (minutes)
+│   ├── difficulty: number (1-5)
+│   ├── concentration: number (1-5)
+│   ├── createdAt: timestamp
+│   └── updatedAt: timestamp
+
+goals/
+├── {goalId}/
+│   ├── userId: string
+│   ├── targetScore: number
+│   ├── examDate: date
+│   ├── createdAt: timestamp
+│   └── updatedAt: timestamp
+```
+
 ## 🔧 開発ガイドライン
 
 ### コーディング規約
@@ -307,20 +385,104 @@ npx vercel
 - [ ] 新機能のテスト追加
 - [ ] TypeScript型エラーの解消
 - [ ] レスポンシブデザインの確認
+## ❓ トラブルシューティング
 
+### よくある問題と解決方法
+
+#### 1. Firebaseエミュレーターに接続できない
+```bash
+# 問題: "Failed to connect to emulator"エラー
+# 解決策:
+npm run emulator   # 別ターミナルでエミュレーターを起動
+npm run dev        # 別ターミナルで開発サーバーを起動
+```
+
+#### 2. ポート3000/4000が既に使用されている
+```bash
+# Macの場合 - 使用中のプロセスを確認・終了
+lsof -i :3000
+kill -9 <PID>
+
+# または、異なるポートで起動
+PORT=3001 npm run dev
+```
+
+#### 3. Node.js バージョンエラー
+```bash
+# v18.17.0以上が必須です
+node --version
+
+# nvm を使用している場合
+nvm install 18.17.0
+nvm use 18.17.0
+```
+
+#### 4. `npm install` で依存関係インストール失敗
+```bash
+# キャッシュをクリアして再度インストール
+rm -rf node_modules package-lock.json
+npm cache clean --force
+npm install
+```
+
+#### 5. 環境変数が読み込まれない
+```bash
+# .env.local ファイルが存在するか確認
+ls -la | grep env
+
+# Nextサーバーを再起動
+npm run dev   # Ctrl+C で停止後、再実行
+```
+
+#### 6. テスト実行時の失敗
+```bash
+# 個別テストで詳細エラーを確認
+npm test -- --verbose task-creation.test.tsx
+
+# キャッシュをクリア
+npm test -- --clearCache
+npm test
+```
+
+### 開発環境の初期化
+
+問題が解決しない場合は、以下で環境をリセット：
+
+```bash
+# 1. 依存関係と自動生成ファイルを削除
+rm -rf node_modules .next package-lock.json
+
+# 2. 再インストール
+npm install
+
+# 3. 開発サーバー再起動
+npm run dev:emulator
+```
+
+### 👥 サポート
+
+- 📖 **ドキュメント**: [Firebase Setup Guide](docs/firebase-setup-guide.md)
+- 🐛 **Bug Report**: [Issues](https://github.com/hiro-mu/toeic-study-manager/issues)
+- 💬 **質問**: Issuesで質問タグを付けてお気軽にお問い合わせください
 ## 📝 ライセンス
 
 このプロジェクトは [MIT License](LICENSE) の下で公開されています。
 
 ## 🙏 謝辞
 
+このプロジェクトは以下の優秀なツール・ライブラリに支えられています：
+
 - [Next.js](https://nextjs.org/) - React開発フレームワーク
 - [Firebase](https://firebase.google.com/) - バックエンドサービス
 - [Tailwind CSS](https://tailwindcss.com/) - CSSフレームワーク
 - [React Testing Library](https://testing-library.com/) - テストライブラリ
+- [Jest](https://jestjs.io/) - テストランナー
+- [TypeScript](https://www.typescriptlang.org/) - 型安全な開発
 
 ---
 
-**📞 サポート**: 問題や質問がある場合は、[Issues](https://github.com/hiro-mu/toeic-study-manager/issues) ページでお気軽にお問い合わせください。
+**❤️ このプロジェクトが役に立つ場合は、⭐ Star をお願いします！**
 
-**⭐ Star this repo** if you find it helpful!
+**📞 お問い合わせ**: 問題や提案がある場合は、[Issues](https://github.com/hiro-mu/toeic-study-manager/issues) ページでお気軽にご連絡ください。
+
+**🚀 Happy Learning!** TOEIC学習の成功をお祈りしています！
