@@ -306,7 +306,6 @@ export interface UpdateNicknameResponse {
 'use client';
 
 import { useState, useEffect } from 'react';
-import EncouragementBanner from '@/components/EncouragementBanner';
 import { useAuth } from '@/hooks/useAuth';
 import type { Goal, UserProfile } from '@/types';
 import { useRouter } from 'next/navigation';
@@ -478,8 +477,6 @@ export default function Header({
           userId={user.uid}
         />
       )}
-
-      <EncouragementBanner />
     </div>
   );
 }

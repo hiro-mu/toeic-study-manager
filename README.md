@@ -258,7 +258,6 @@ src/
 │   ├── TaskList.tsx       # タスクリスト
 │   ├── Header.tsx         # ヘッダーコンポーネント
 │   ├── EncouragementToast.tsx     # 励ましメッセージトースト
-│   └── EncouragementBanner.tsx    # 励ましメッセージバナー
 ├── hooks/                 # カスタムHooks
 │   └── useAuth.ts         # 認証状態管理
 ├── lib/                   # ライブラリ・設定
