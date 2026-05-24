@@ -228,6 +228,10 @@ export default function Home() {
 
   const stats = calculateStats();
 
+  const handleLogout = async () => {
+    router.push('/signin');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-400 to-purple-600">
       <Header
@@ -245,6 +249,7 @@ export default function Home() {
             }
           }
         }}
+        onLogout={handleLogout}
       />
 
       <div className="container mx-auto p-6 space-y-8">

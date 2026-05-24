@@ -2,7 +2,6 @@
 
 import { useAuth } from '@/hooks/useAuth';
 import type { Goal } from '@/types';
-import { useRouter } from 'next/navigation';
 
 interface HeaderProps {
   completedTasks: number;
@@ -10,16 +9,18 @@ interface HeaderProps {
   completionRate: number;
   goals: Goal | null;
   onSaveGoals: (goals: Goal) => void;
+  onLogout?: () => Promise<void>;
 }
 
-export default function Header({ completedTasks, totalTasks, completionRate, goals, onSaveGoals }: HeaderProps) {
+export default function Header({ completedTasks, totalTasks, completionRate, goals, onSaveGoals, onLogout }: HeaderProps) {
   const { user, signOut } = useAuth();
-  const router = useRouter();
 
   const handleLogout = async () => {
     try {
       await signOut();
-      router.push('/signin');
+      if (onLogout) {
+        await onLogout();
+      }
     } catch (error) {
       console.error('Logout failed:', error);
     }

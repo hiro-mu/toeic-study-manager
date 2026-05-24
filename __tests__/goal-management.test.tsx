@@ -1,8 +1,8 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
 import Header from '@/components/Header';
-import { clearLocalStorage } from './utils';
 import type { Goal } from '@/types';
+import '@testing-library/jest-dom';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { clearLocalStorage } from './utils';
 
 describe('目標設定・管理機能', () => {
   const mockOnSaveGoals = jest.fn();
