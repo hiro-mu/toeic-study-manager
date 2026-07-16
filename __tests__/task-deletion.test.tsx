@@ -36,6 +36,7 @@ describe('タスク削除機能', () => {
     // 削除確認ダイアログでOKをクリック
     const confirmButton = screen.getByText('削除する');
     fireEvent.click(confirmButton);
+    expect(mockOnDelete).toHaveBeenCalledTimes(1);
     expect(mockOnDelete).toHaveBeenCalledWith(mockTask.id);
 
     // 削除後のタスクリストを再レンダリング

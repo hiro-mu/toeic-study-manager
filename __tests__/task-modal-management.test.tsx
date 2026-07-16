@@ -225,6 +225,7 @@ describe('TaskModal - タスク管理機能', () => {
     fireEvent.click(saveButton);
 
     await waitFor(() => {
+      expect(mockHandlers.onCompleteTask).toHaveBeenCalledTimes(1);
       expect(mockHandlers.onCompleteTask).toHaveBeenCalledWith('1', {
         time: 30,
         difficulty: '普通',
@@ -253,6 +254,7 @@ describe('TaskModal - タスク管理機能', () => {
     fireEvent.click(saveButton);
 
     await waitFor(() => {
+      expect(mockHandlers.onEditTask).toHaveBeenCalledTimes(1);
       expect(mockHandlers.onEditTask).toHaveBeenCalledWith('1', {
         title: '編集されたタスク',
         category: 'reading',
@@ -282,6 +284,7 @@ describe('TaskModal - タスク管理機能', () => {
     fireEvent.click(confirmButton);
 
     await waitFor(() => {
+      expect(mockHandlers.onDeleteTask).toHaveBeenCalledTimes(1);
       expect(mockHandlers.onDeleteTask).toHaveBeenCalledWith('1');
     });
   });

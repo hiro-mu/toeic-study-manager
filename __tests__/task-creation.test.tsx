@@ -41,6 +41,7 @@ describe('タスク作成機能', () => {
 
       fireEvent.click(screen.getByText('タスクを追加'));
 
+      expect(mockOnAddTask).toHaveBeenCalledTimes(1);
       expect(mockOnAddTask).toHaveBeenCalledWith({
         title: 'TOEIC Part 5の練習',
         category: 'reading',
@@ -180,6 +181,7 @@ describe('タスク作成機能', () => {
 
       fireEvent.click(screen.getByText('タスクを一括作成'));
 
+      expect(mockOnAddBulkTasks).toHaveBeenCalledTimes(1);
       expect(mockOnAddBulkTasks).toHaveBeenCalledWith([
         {
           title: '毎日の単語学習',

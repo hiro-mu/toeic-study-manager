@@ -41,10 +41,6 @@ describe('目標設定・管理機能', () => {
       targetScore: 800,
       examDate: null
     });
-    expect(mockOnSaveGoals).toHaveBeenLastCalledWith({
-      targetScore: 800,
-      examDate: null
-    });
   });
 
   test('試験日が正しく設定されることを確認', () => {
@@ -69,10 +65,6 @@ describe('目標設定・管理機能', () => {
     // onSaveGoalsが呼ばれたことを確認
     expect(mockOnSaveGoals).toHaveBeenCalledTimes(1);
     expect(mockOnSaveGoals).toHaveBeenCalledWith({
-      targetScore: 0,
-      examDate: futureDate
-    });
-    expect(mockOnSaveGoals).toHaveBeenLastCalledWith({
       targetScore: 0,
       examDate: futureDate
     });

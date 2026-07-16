@@ -43,6 +43,7 @@ describe('タスク完了機能', () => {
     fireEvent.click(modalCompleteButton);
 
     // タスクの完了処理が正しい引数で呼ばれることを確認
+    expect(mockOnComplete).toHaveBeenCalledTimes(1);
     expect(mockOnComplete).toHaveBeenCalledWith(initialTask.id, { "difficulty": "normal", "focus": "normal", "time": 30 });
 
     // モーダルが閉じられることを確認
@@ -172,6 +173,7 @@ describe('タスク完了機能', () => {
     fireEvent.click(recordButton);
 
     // コールバックが正しく呼ばれることを確認
+    expect(mockOnComplete).toHaveBeenCalledTimes(1);
     expect(mockOnComplete).toHaveBeenCalledWith('1', {
       time: 45,
       difficulty: 'normal',
