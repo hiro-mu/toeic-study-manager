@@ -36,7 +36,12 @@ describe('目標設定・管理機能', () => {
     fireEvent.change(scoreInput, { target: { value: '800' } });
 
     // onSaveGoalsが呼ばれたことを確認
+    expect(mockOnSaveGoals).toHaveBeenCalledTimes(1);
     expect(mockOnSaveGoals).toHaveBeenCalledWith({
+      targetScore: 800,
+      examDate: null
+    });
+    expect(mockOnSaveGoals).toHaveBeenLastCalledWith({
       targetScore: 800,
       examDate: null
     });
@@ -62,7 +67,12 @@ describe('目標設定・管理機能', () => {
     fireEvent.change(dateInput, { target: { value: futureDate } });
 
     // onSaveGoalsが呼ばれたことを確認
+    expect(mockOnSaveGoals).toHaveBeenCalledTimes(1);
     expect(mockOnSaveGoals).toHaveBeenCalledWith({
+      targetScore: 0,
+      examDate: futureDate
+    });
+    expect(mockOnSaveGoals).toHaveBeenLastCalledWith({
       targetScore: 0,
       examDate: futureDate
     });
