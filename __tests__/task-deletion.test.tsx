@@ -1,8 +1,8 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
 import TaskList from '@/components/TaskList';
-import { mockTask } from './utils';
 import { Task } from '@/types';
+import '@testing-library/jest-dom';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { mockTask } from './utils';
 
 describe('タスク削除機能', () => {
   const mockOnComplete = jest.fn();

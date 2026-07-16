@@ -1,7 +1,7 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
 import TaskForm from '@/components/TaskForm';
-import { mockGoal, clearLocalStorage, setLocalStorageItem } from './utils';
+import '@testing-library/jest-dom';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { clearLocalStorage } from './utils';
 
 describe('タスク作成機能', () => {
   const mockOnAddTask = jest.fn();
