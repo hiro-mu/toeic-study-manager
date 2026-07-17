@@ -272,11 +272,11 @@ flowchart TD
 
 ### 13.2 初回デプロイ後の動作確認
 
-- [ ] `security-audit.yml` を `workflow_dispatch` で手動実行
-- [ ] `npm-audit-report` artifact が保存されることを確認
-- [ ] High以上の脆弱性がある場合にジョブが失敗することを確認
-- [ ] Dependabotの初回PRでラベル `dependencies` / `security` が付与されることを確認
-- [ ] Dependabot PRで `ci.yml`（Lint / Unit Test / Build）がすべて実行されることを確認
+- [x] `security-audit.yml` を `workflow_dispatch` で手動実行
+- [x] `npm-audit-report` artifact が保存されることを確認
+- [x] High以上の脆弱性がある場合にジョブが失敗することを確認
+- [x] Dependabotの初回PRでラベル `dependencies` / `security` が付与されることを確認
+- [x] Dependabot PRで `ci.yml`（Lint / Unit Test / Build）がすべて実行されることを確認
 
 ### 13.3 初回2週間の運用監視
 
