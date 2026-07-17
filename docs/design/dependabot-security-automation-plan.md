@@ -257,3 +257,36 @@ flowchart TD
 ## 12. 補足
 
 - Dependabot自体が「脆弱性対応PR」を作成できるため、GitHub Actionsは主に「検証」「監査」「通知」「マージ制御」を担当する。
+
+---
+
+## 13. 運用手順チェックリスト（追記）
+
+### 13.1 リポジトリ設定（GitHub画面）
+
+- [x] Settings > Branches > Branch protection rules で `main` の保護ルールを設定
+- [x] 必須ステータスチェックに CI の各ジョブ（Lint / Unit Test / Build）を追加
+- [x] 「必須チェックが成功するまでマージ不可」を有効化
+- [x] Auto-merge を無効化（レビュー + CI通過を必須に統一）
+- [x] 管理者にも保護ルールを適用するかを運用ポリシーに合わせて決定
+
+### 13.2 初回デプロイ後の動作確認
+
+- [ ] `security-audit.yml` を `workflow_dispatch` で手動実行
+- [ ] `npm-audit-report` artifact が保存されることを確認
+- [ ] High以上の脆弱性がある場合にジョブが失敗することを確認
+- [ ] Dependabotの初回PRでラベル `dependencies` / `security` が付与されることを確認
+- [ ] Dependabot PRで `ci.yml`（Lint / Unit Test / Build）がすべて実行されることを確認
+
+### 13.3 初回2週間の運用監視
+
+- [ ] PR件数が過多の場合、Dependabotグルーピング粒度またはPR上限を調整
+- [ ] noisy alert が多い場合、監査閾値とignore方針（期限付き）を再評価
+- [ ] 毎週のトリアージ結果を記録（対応済み / 保留 / 例外）
+
+### 13.4 受け入れ判定（運用）
+
+- [ ] TC-01: npm依存更新PRが週次で作成される
+- [ ] TC-02: github-actions更新PRが週次で作成される
+- [ ] TC-03: Dependabot PRに `dependencies` と `security` ラベルが付与される
+- [ ] TC-04: High脆弱性検出時に `security-audit` が失敗する
