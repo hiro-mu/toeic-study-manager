@@ -2,6 +2,11 @@
 
 ## 🚀 開発環境セットアップ
 
+### 前提条件
+
+- Node.js 18.17.0以上
+- JDK 21以上（Firebase Emulator起動に必須）
+
 ### 1. 環境変数設定
 
 `.env.local.example`を`.env.local`にコピーし、Firebase Console から取得した値で更新してください：
@@ -67,17 +72,19 @@ npm run emulator
 npm run dev:emulator
 ```
 
+`npm run emulator` は `scripts/run-firebase-emulator.mjs` を経由し、Java 21を解決した状態で Firebase CLI を起動します。
+
 ### Emulator UI アクセス
 
-- **Emulator Suite UI**: http://localhost:4000
-- **Firestore Emulator**: http://localhost:8080
-- **Auth Emulator**: http://localhost:9099
+- **Emulator Suite UI**: [http://localhost:4001](http://localhost:4001)
+- **Firestore Emulator**: [http://localhost:8081](http://localhost:8081)
+- **Auth Emulator**: [http://localhost:9098](http://localhost:9098)
 
 ## 📊 データ構造
 
 ### Firestore Collections
 
-```
+```text
 /users/{userId}/
   ├── profile/
   │   └── goals (document)
@@ -105,14 +112,24 @@ npm run dev:emulator
 ### よくある問題
 
 1. **エミュレーター接続エラー**
-   - ポート8080/9099が使用中でないか確認
-   - `firebase emulators:start`で個別起動して確認
+   - ポート4001/8081/9098が使用中でないか確認4000, 8080, 9099 を掴んでいる
+   - `npm run emulator`で起動して確認
 
-2. **認証エラー**
+2. **`Unable to find JDK 21` エラー**
+   - `java -version` で Java 21以上か確認
+   - 必要なら `JAVA_HOME` を Java 21 に設定して再実行
+   - あわせて PATH に `$JAVA_HOME/bin` を追加
+
+   補足: シェル別設定例
+   - bash/zsh: `export JAVA_HOME=$(/usr/libexec/java_home -v 21)` と `export PATH="$JAVA_HOME/bin:$PATH"`
+   - `java_home -v 21` で見つからない場合（Homebrewのkeg-only構成）: `export JAVA_HOME="$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home"` と `export PATH="$JAVA_HOME/bin:$PATH"`
+   - fish: `set -gx JAVA_HOME (brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home` と `fish_add_path $JAVA_HOME/bin`
+
+3. **認証エラー**
    - `.env.local`の設定値を確認
    - Firebaseプロジェクトでドメインが許可されているか確認
 
-3. **データが表示されない**
+4. **データが表示されない**
    - Emulator UIでデータが正しく保存されているか確認
    - ブラウザの開発者ツールでエラーログ確認
 
@@ -123,7 +140,7 @@ npm run dev:emulator
 npx firebase --version
 
 # Emulator状態確認
-npx firebase emulators:start --only firestore,auth --inspect-functions
+npm run emulator:ui
 
 # プロジェクト状態確認
 npx firebase projects:list
