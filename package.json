@@ -9,8 +9,8 @@
     "lint": "next lint",
     "test": "NODE_OPTIONS=--max_old_space_size=4096 jest --verbose",
     "test:watch": "NODE_OPTIONS=--max_old_space_size=4096 jest --watch",
-    "emulator": "firebase emulators:start --project demo-toeic-study-app",
-    "emulator:ui": "firebase emulators:start --project demo-toeic-study-app --only firestore,auth --inspect-functions",
+    "emulator": "node scripts/run-firebase-emulator.mjs --project demo-toeic-study-app",
+    "emulator:ui": "node scripts/run-firebase-emulator.mjs --project demo-toeic-study-app --only firestore,auth --inspect-functions",
     "dev:emulator": "concurrently \"npm run emulator\" \"npm run dev\""
   },
   "dependencies": {
