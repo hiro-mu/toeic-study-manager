@@ -89,6 +89,7 @@ npm run dev:emulator
 
 - **Node.js** (v18.17.0以上推奨)
 - **npm** または **yarn**
+- **Java Development Kit (JDK) 21以上** (Firebase Emulator起動に必須)
 - **Firebase プロジェクト** (本番環境の場合)
 
 ### 1. リポジトリクローン
@@ -137,6 +138,8 @@ npm run dev:emulator
 npm run emulator  # Firebaseエミュレーター
 npm run dev       # Next.js開発サーバー（Turbopack）
 ```
+
+`npm run emulator` は `scripts/run-firebase-emulator.mjs` を経由して実行され、Java 21の解決を行ったうえで Firebase CLI を起動します。
 
 #### 本番Firebase接続
 
@@ -396,17 +399,53 @@ npm run emulator   # 別ターミナルでエミュレーターを起動
 npm run dev        # 別ターミナルで開発サーバーを起動
 ```
 
-#### 2. ポート3000/4000が既に使用されている
+#### 2. ポート競合が発生する
 ```bash
 # Macの場合 - 使用中のプロセスを確認・終了
 lsof -i :3000
 kill -9 <PID>
 
+# Emulatorで使用するポート（実装値）
+lsof -i :4001  # Emulator Suite UI
+lsof -i :8081  # Firestore Emulator
+lsof -i :9098  # Auth Emulator
+
 # または、異なるポートで起動
 PORT=3001 npm run dev
 ```
 
-#### 3. Node.js バージョンエラー
+#### 3. `Unable to find JDK 21` エラー
+```bash
+# Javaバージョン確認
+java -version
+
+# Java 21のインストール先をJAVA_HOMEに設定
+# あわせて PATH に $JAVA_HOME/bin を追加
+# 設定後に java -version で 21 以上になっていることを確認
+
+# 再実行
+npm run emulator
+```
+
+補足: シェル別の設定例（必要な場合のみ）
+
+- bash/zsh
+```bash
+export JAVA_HOME=$(/usr/libexec/java_home -v 21)
+export PATH="$JAVA_HOME/bin:$PATH"
+```
+- `java_home -v 21` で見つからない場合（Homebrewのkeg-only構成）
+```bash
+export JAVA_HOME="$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home"
+export PATH="$JAVA_HOME/bin:$PATH"
+```
+- fish
+```fish
+set -gx JAVA_HOME (brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home
+fish_add_path $JAVA_HOME/bin
+```
+
+#### 4. Node.js バージョンエラー
 ```bash
 # v18.17.0以上が必須です
 node --version
@@ -416,7 +455,7 @@ nvm install 18.17.0
 nvm use 18.17.0
 ```
 
-#### 4. `npm install` で依存関係インストール失敗
+#### 5. `npm install` で依存関係インストール失敗
 ```bash
 # キャッシュをクリアして再度インストール
 rm -rf node_modules package-lock.json
@@ -424,7 +463,7 @@ npm cache clean --force
 npm install
 ```
 
-#### 5. 環境変数が読み込まれない
+#### 6. 環境変数が読み込まれない
 ```bash
 # .env.local ファイルが存在するか確認
 ls -la | grep env
@@ -433,7 +472,7 @@ ls -la | grep env
 npm run dev   # Ctrl+C で停止後、再実行
 ```
 
-#### 6. テスト実行時の失敗
+#### 7. テスト実行時の失敗
 ```bash
 # 個別テストで詳細エラーを確認
 npm test -- --verbose task-creation.test.tsx
