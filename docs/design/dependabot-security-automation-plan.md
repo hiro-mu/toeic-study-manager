@@ -148,8 +148,8 @@ flowchart TD
 - Dependabot PRを含むすべてのPRで同一品質ゲートを実行
 2. 依存脆弱性監査ワークフロー追加 (`.github/workflows/security-audit.yml`)
 - `schedule` + `workflow_dispatch`
-- Nodeセットアップ、`npm ci`、`npm audit --audit-level=high`
-- High以上の脆弱性検出時にジョブ失敗
+- Nodeセットアップ、`npm ci`、`npm audit --audit-level=low`
+- いずれかの脆弱性レベル（Low/Moderate/High/Critical）を検出した場合にジョブ失敗
 - 監査レポートをartifact保存
 3. Dependabot PRとの連携確認
 - Dependabot起点PRでも `ci.yml` が必ず実行されることを確認
@@ -186,7 +186,8 @@ flowchart TD
   - `.github/workflows/ci.yml` の Unit Test
   - `.github/workflows/ci.yml` の Build
 - 追加チェック
-  - `npm audit`（High以上でfail）
+  - `.github/workflows/ci.yml` の `npm audit --audit-level=high`（PR時はHigh以上でfail）
+  - `.github/workflows/security-audit.yml` の `npm audit --audit-level=low`（schedule/workflow_dispatch時は全レベルでfail）
   - 依存ライセンスチェック（必要なら後続導入）
 
 ---
@@ -205,7 +206,8 @@ flowchart TD
 - TC-01: npm依存更新PRが週次で作成される
 - TC-02: github-actions更新PRが週次で作成される
 - TC-03: Dependabot PRに `dependencies` と `security` ラベルが付与される
-- TC-04: High脆弱性検出時に `security-audit` が失敗し通知される
+- TC-04: schedule/workflow_dispatch で Low脆弱性のみでも `security-audit` が失敗し通知される
+- TC-05: PR時に High または Critical 脆弱性検出で `ci` の Security Audit が失敗する
 
 ---
 

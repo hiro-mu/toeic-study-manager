@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   npm-audit:
-    name: npm audit (high+)
+    name: npm audit (all levels)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -29,7 +29,7 @@ jobs:
         id: audit
         run: |
           set +e
-          npm audit --audit-level=high --json > npm-audit-report.json
+          npm audit --audit-level=low --json > npm-audit-report.json
           status=$?
           echo "status=$status" >> "$GITHUB_OUTPUT"
           exit 0
@@ -56,7 +56,7 @@ jobs:
 
           let shouldFail = 'false';
           let failureKind = 'none';
-          let summary = 'No high or critical vulnerabilities detected.';
+          let summary = 'No vulnerabilities detected.';
 
           if (status !== '0') {
             shouldFail = 'true';
@@ -66,12 +66,15 @@ jobs:
             try {
               const raw = fs.readFileSync('npm-audit-report.json', 'utf8');
               const report = JSON.parse(raw);
+              const low = report?.metadata?.vulnerabilities?.low ?? 0;
+              const moderate = report?.metadata?.vulnerabilities?.moderate ?? 0;
               const high = report?.metadata?.vulnerabilities?.high ?? 0;
               const critical = report?.metadata?.vulnerabilities?.critical ?? 0;
+              const total = low + moderate + high + critical;
 
-              if (high > 0 || critical > 0) {
+              if (total > 0) {
                 failureKind = 'vulnerabilities';
-                summary = `Detected ${high} high and ${critical} critical vulnerabilities.`;
+                summary = `Detected vulnerabilities - low: ${low}, moderate: ${moderate}, high: ${high}, critical: ${critical}.`;
               } else if (report?.error?.summary) {
                 summary = report.error.summary;
               }
@@ -85,11 +88,11 @@ jobs:
           fs.appendFileSync(outputPath, `summary=${summary.replace(/\r?\n/g, ' ')}\n`);
           EOF
 
-      - name: Fail on high or critical vulnerabilities
+      - name: Fail on any vulnerabilities
         if: steps.classify.outputs.should_fail == 'true'
         run: |
           if [ "${{ steps.classify.outputs.failure_kind }}" = "vulnerabilities" ]; then
-            echo "High or critical vulnerabilities detected. ${{ steps.classify.outputs.summary }}"
+            echo "Vulnerabilities detected. ${{ steps.classify.outputs.summary }}"
           else
             echo "npm audit could not be evaluated reliably. ${{ steps.classify.outputs.summary }}"
           fi
